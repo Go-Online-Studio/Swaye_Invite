@@ -1,0 +1,2632 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Swayé - The Ultimate Night</title>
+
+    <!-- Preconnect & DNS-Prefetch for Fast CDN & Fonts Resolution -->
+    <link rel="preconnect" href="https://res.cloudinary.com" crossorigin>
+    <link rel="dns-prefetch" href="https://res.cloudinary.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    
+    <!-- Critical Preload Links: Intro Video & Poster Thumbnail for Instant Playback -->
+    <link rel="preload" href="https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4" as="video" type="video/mp4" crossorigin="anonymous">
+    <link rel="preload" href="images/Swaye_IntroThumb.webp" as="image" fetchpriority="high">
+
+    <!-- Critical Preload Links: Above-the-fold Hero Background & Shimmer Texture -->
+    <link rel="preload" href="images/hero_banner_bg.avif" as="image" fetchpriority="high">
+    <link rel="preload" href="images/pink_glitter_texture.avif" as="image">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800;900&family=Great+Vibes&family=Montserrat:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+    
+    <!-- Swiper.js CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+    <style>
+        :root {
+            --pink-velvet: #b31b54;
+            --magenta-glow: #ff007f;
+            --rose-gold: #e28fae;
+            --rose-gold-light: #fce2ec;
+            --rose-gold-dark: #8e2b52;
+            --dark-bg: #111111;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(226, 143, 174, 0.25);
+            --max-w: 480px;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--dark-bg);
+            font-family: 'Montserrat', sans-serif;
+            color: #fff;
+            overflow: hidden; /* Scroll locked until unlocked */
+            -webkit-font-smoothing: antialiased;
+        }
+        body.unlocked { overflow-y: auto; overflow-x: hidden; }
+
+        .serif { font-family: 'Cinzel', 'Playfair Display', serif; }
+        .script { font-family: 'Great Vibes', cursive; }
+
+        #app {
+            width: 100%;
+            max-width: var(--max-w);
+            min-height: 100vh;
+            margin: 0 auto;
+            position: relative;
+            background: #0d0409;
+            box-shadow: 0 0 50px rgba(0, 0, 0, 0.95);
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        /* ── Landscape Warning ── */
+        #landscape-warning {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: #111111;
+            color: var(--rose-gold);
+            z-index: 999999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+        }
+        #landscape-warning svg {
+            margin-bottom: 20px;
+            stroke: var(--rose-gold);
+            animation: rotatePhone 2s infinite ease-in-out;
+        }
+        #landscape-warning h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+            letter-spacing: 0.1em;
+        }
+        #landscape-warning p {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            max-width: 280px;
+        }
+        @keyframes rotatePhone {
+            0% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+            100% { transform: rotate(-90deg); }
+        }
+        @media screen and (orientation: landscape) and (max-height: 550px) {
+            #landscape-warning { display: flex !important; }
+            #app, #disco-canvas, #mfab, #curtain-layer { display: none !important; }
+        }
+
+        /* ── HTML5 Canvas Background (Diamond Dust & Lasers) ── */
+        #disco-canvas {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--max-w);
+            height: 100%;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        /* ── Video Intro Overlay (Full Width & Height, Undistorted) ── */
+        #curtain-layer {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: var(--max-w);
+            height: 100vh;
+            height: 100dvh;
+            z-index: 500;
+            background: #000;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 40px;
+            transition: opacity 0.8s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.8s;
+            cursor: pointer;
+            overflow: hidden;
+        }
+        #curtain-layer.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+        #curtain-video {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            pointer-events: none;
+            opacity: 1;
+        }
+        .tap-overlay {
+            position: relative;
+            z-index: 510;
+            text-align: center;
+            animation: tapPulse 2s infinite ease-in-out;
+            padding: 8px;
+            pointer-events: none;
+        }
+        .tap-text {
+            font-family: 'Cinzel', serif;
+            color: #fff;
+            font-size: 14px;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.8), 0 2px 8px rgba(0, 0, 0, 0.9);
+            border: 1px solid rgba(226, 143, 174, 0.6);
+            padding: 12px 28px;
+            border-radius: 30px;
+            background: rgba(17, 17, 17, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(255, 0, 127, 0.35);
+        }
+        @keyframes tapPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.04); opacity: 0.85; }
+        }
+
+        /* ── Floating Audio Control ── */
+        #mfab {
+            position: fixed;
+            bottom: 25px;
+            right: calc(50% - (var(--max-w) / 2) + 25px);
+            z-index: 100;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(20, 5, 14, 0.75);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(226, 143, 174, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.35);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        @media (max-width: 480px) {
+            #mfab { right: 25px; }
+        }
+        #mfab:active { transform: scale(0.92); }
+        #mfab svg { width: 22px; height: 22px; fill: none; stroke: var(--rose-gold-light); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        .icon-muted { display: none; }
+        #mfab.muted .icon-unmuted { display: none; }
+        #mfab.muted .icon-muted { display: block; stroke: #888; }
+
+        /* ══════════════════════════════════════════════
+           SECTION 1: HERO / BANNER
+        ══════════════════════════════════════════════════ */
+        .hero-banner-sec {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            background: url('images/hero_banner_bg.avif') top center / cover no-repeat;
+            padding: 35px 14px 30px;
+            text-align: center;
+            overflow: hidden;
+        }
+        .hero-banner-sec::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            height: 140px;
+            background: linear-gradient(to bottom, rgba(13, 4, 9, 0) 0%, rgba(13, 4, 9, 0.85) 60%, #0d0409 100%);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .hero-top-group {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+        }
+
+        .swaye-oval-logo {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px 28px;
+            margin-bottom: 22px;
+        }
+        .swaye-oval-logo::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1.2px solid rgba(226, 143, 174, 0.7);
+            border-radius: 50px;
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.3), inset 0 0 8px rgba(226, 143, 174, 0.2);
+        }
+        .swaye-oval-logo::after {
+            content: '';
+            position: absolute;
+            left: -15px;
+            right: -15px;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.6) 20%, transparent 40%, transparent 60%, rgba(226, 143, 174, 0.6) 80%, transparent);
+            pointer-events: none;
+        }
+        .swaye-oval-logo span {
+            font-family: 'Cinzel', serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            letter-spacing: 0.38em;
+            color: var(--rose-gold-light);
+            text-transform: uppercase;
+            text-indent: 0.38em;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title-wrap {
+            position: relative;
+            width: 100%;
+        }
+        .hero-title-wrap::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 118%;
+            height: 135%;
+            background: radial-gradient(ellipse at center, rgba(13, 4, 9, 0.82) 0%, rgba(13, 4, 9, 0.45) 55%, transparent 80%);
+            z-index: 0;
+            pointer-events: none;
+            border-radius: 50%;
+        }
+        .hero-title-wrap > * {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title-the {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            line-height: 1.1;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 180, 210, 0.8), 0 2px 8px rgba(0, 0, 0, 1);
+            background: linear-gradient(180deg, #ffffff 0%, #ffdce8 50%, #f0a8c2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero-title-main {
+            font-family: 'Cinzel', serif;
+            font-size: 3.4rem;
+            font-weight: 900;
+            letter-spacing: 0.06em;
+            line-height: 0.95;
+            margin: 4px 0 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* ══════════════════════════════════════════════
+           PARTY FX: GLITTER TEXT CLIP & NEON TUBE GLOW
+        ══════════════════════════════════════════════════ */
+        /* 1. High-Impact Sparkling Glitter Clipped Text */
+        .glitter-text-clip {
+            background-image: url('images/pink_glitter_texture.avif') !important;
+            background-size: 160px 160px !important;
+            background-repeat: repeat !important;
+            -webkit-background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            display: inline-block;
+            filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 12px rgba(255, 0, 127, 0.9)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.95)) drop-shadow(0 8px 30px rgba(0, 0, 0, 1));
+            animation: glitterShimmer 30s linear infinite;
+            position: relative;
+        }
+
+        @keyframes glitterShimmer {
+            0% {
+                background-position: 0px 0px;
+                filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 10px rgba(255, 0, 127, 0.8)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.95)) brightness(1.1);
+            }
+            50% {
+                background-position: 80px 80px;
+                filter: drop-shadow(0 0 2px #ffffff) drop-shadow(0 0 20px rgba(255, 60, 160, 1)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.95)) brightness(1.35);
+            }
+            100% {
+                background-position: 160px 160px;
+                filter: drop-shadow(0 0 1px #ffffff) drop-shadow(0 0 10px rgba(255, 0, 127, 0.8)) drop-shadow(0 4px 16px rgba(0, 0, 0, 0.95)) brightness(1.1);
+            }
+        }
+
+        /* 2. Glass-Tube Pink Neon Sign Effect (Vivid Party Neon) */
+        .neon-script-glow {
+            font-family: 'Great Vibes', cursive;
+            color: #ffffff !important;
+            -webkit-text-fill-color: #ffffff !important;
+            text-shadow:
+                0 0 2px #ffffff,
+                0 0 5px #ffffff,
+                0 0 10px #ff3388,
+                0 0 22px #ff007f,
+                0 0 45px #ff007f,
+                0 0 75px #ff0066,
+                0 0 100px #b3004b !important;
+            animation: neonTubePulse 3.5s infinite alternate ease-in-out;
+            display: inline-block;
+            position: relative;
+            filter: drop-shadow(0 0 12px rgba(255, 0, 127, 0.8));
+        }
+
+        @keyframes neonTubePulse {
+            0%, 18%, 22%, 25%, 53%, 57%, 100% {
+                text-shadow:
+                    0 0 2px #ffffff,
+                    0 0 5px #ffffff,
+                    0 0 10px #ff3388,
+                    0 0 22px #ff007f,
+                    0 0 45px #ff007f,
+                    0 0 75px #ff0066,
+                    0 0 100px #b3004b;
+                opacity: 1;
+            }
+            20%, 24%, 55% {
+                text-shadow:
+                    0 0 1px #ffffff,
+                    0 0 3px #ff3388,
+                    0 0 8px #ff007f,
+                    0 0 16px #ff007f;
+                opacity: 0.88;
+            }
+        }
+
+        /* Neon Tube Underline Accent */
+        .neon-underline-bar {
+            width: 100%;
+            max-width: 260px;
+            height: 2px;
+            margin: 4px auto 0;
+            background: #ffffff;
+            border-radius: 2px;
+            box-shadow: 
+                0 0 2px #ffffff,
+                0 0 6px #ff3388,
+                0 0 15px #ff007f,
+                0 0 30px #ff007f;
+            animation: neonTubePulse 3.5s infinite alternate ease-in-out;
+        }
+
+        /* Sparkle Star Glints on Glitter Text */
+        .glitter-sparkle {
+            position: absolute;
+            color: #ffffff;
+            font-size: 16px;
+            line-height: 1;
+            text-shadow: 0 0 4px #ffffff, 0 0 12px #ff007f, 0 0 20px #ff007f;
+            animation: sparklePop 2.4s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .sp-1 { top: 8%; left: 10%; animation-delay: 0s; }
+        .sp-2 { top: 15%; right: 12%; animation-delay: 0.6s; font-size: 20px; }
+        .sp-3 { bottom: 15%; left: 32%; animation-delay: 1.2s; }
+        .sp-4 { bottom: 8%; right: 26%; animation-delay: 1.8s; font-size: 18px; }
+
+        @keyframes sparklePop {
+            0%, 100% { transform: scale(0.4) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.3) rotate(45deg); opacity: 1; filter: drop-shadow(0 0 8px #fff) drop-shadow(0 0 15px #ff007f); }
+        }
+
+        .hero-title-main .word-ultimate,
+        .hero-title-main .word-night {
+            display: inline-block;
+            position: relative;
+            -webkit-text-stroke: 1px rgb(167 15 76);
+            paint-order: stroke fill;
+        }
+        .hero-title-main .word-ultimate { font-size: 3.2rem; letter-spacing: 0.08em; }
+        .hero-title-main .word-night { font-size: 3.9rem; letter-spacing: 0.12em; margin-top: 2px; }
+
+        .glint {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: radial-gradient(circle, #ffffff 20%, rgba(255, 200, 230, 0.9) 50%, transparent 70%);
+            clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+            filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 12px rgba(255, 0, 127, 0.8));
+            animation: glintTwinkle 3s infinite ease-in-out;
+            pointer-events: none;
+            z-index: 10;
+        }
+        .glint-1 { top: 12%; left: 8%; animation-delay: 0s; }
+        .glint-2 { top: 48%; right: 12%; animation-delay: 1.2s; width: 18px; height: 18px; }
+        .glint-3 { bottom: 8%; left: 24%; animation-delay: 2.1s; }
+        @keyframes glintTwinkle {
+            0%, 100% { transform: scale(0.6) rotate(0deg); opacity: 0.3; }
+            50% { transform: scale(1.3) rotate(45deg); opacity: 1; }
+        }
+
+        .hero-bottom-group {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .save-the-date-card {
+            position: relative;
+            max-width: 380px;
+            padding: 16px 14px 14px;
+            background: rgba(22, 6, 17, 0.82);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(226, 143, 174, 0.7);
+            border-radius: 4px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(255, 0, 127, 0.25), inset 0 0 15px rgba(226, 143, 174, 0.12);
+            margin-bottom: 16px;
+        }
+        .save-the-date-card::before {
+            content: '';
+            position: absolute;
+            inset: 3px;
+            border: 0.8px solid rgba(226, 143, 174, 0.35);
+            border-radius: 2px;
+            pointer-events: none;
+        }
+        .corner-notch {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-color: #f7bbd0;
+            border-style: solid;
+            pointer-events: none;
+        }
+        .cn-tl { top: -2px; left: -2px; border-width: 2px 0 0 2px; }
+        .cn-tr { top: -2px; right: -2px; border-width: 2px 2px 0 0; }
+        .cn-bl { bottom: -2px; left: -2px; border-width: 0 0 2px 2px; }
+        .cn-br { bottom: -2px; right: -2px; border-width: 0 2px 2px 0; }
+
+        .date-time-line {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            color: #ffe6f0;
+            text-transform: uppercase;
+            margin-bottom: 2px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.4);
+        }
+        .date-time-line sup { font-size: 0.65em; top: -0.3em; position: relative; }
+        .date-time-line .pipe { color: rgba(226, 143, 174, 0.8); margin: 0 8px; font-weight: 300; }
+
+        .save-the-date-title {
+            font-family: 'Cinzel', serif;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            color: #ffffff;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 180, 210, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 40%, #e28fae 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .swaye-presents {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 4px;
+        }
+        .swaye-presents .neon-script-glow {
+            font-size: 29px;
+            line-height: 1.1;
+        }
+
+        .scroll-down-wrap {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            cursor: pointer;
+            z-index: 5;
+        }
+        .scroll-down-wrap.visible { opacity: 1; transform: translateY(0); }
+        .scroll-down-wrap span {
+            font-size: 0.6rem;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+            color: var(--rose-gold);
+            margin-bottom: 4px;
+        }
+        .scroll-down-wrap svg {
+            width: 22px;
+            height: 22px;
+            stroke: var(--rose-gold);
+            animation: miniScrollBounce 1.6s infinite ease-in-out;
+        }
+        @keyframes miniScrollBounce {
+            0%, 100% { transform: translateY(0); opacity: 0.7; }
+            50% { transform: translateY(8px); opacity: 1; }
+        }
+
+        /* ══════════════════════════════════════════════
+           SECTION 2: WHAT YOU'RE ABOUT TO EXPERIENCE
+        ══════════════════════════════════════════════════ */
+        .experience-sec {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0d0409 0%, rgba(13, 4, 9, 0.25) 12%, rgba(13, 4, 9, 0.15) 85%, #0d0409 100%),
+                        url('images/experience_sec_bg.avif') center center / cover no-repeat;
+            padding: 50px 20px 60px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            overflow: hidden;
+        }
+
+        .experience-sec::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 65%;
+            background: linear-gradient(90deg, rgba(13, 4, 9, 0.95) 0%, rgba(13, 4, 9, 0.75) 70%, transparent 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .exp-container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            text-align: left;
+        }
+
+        .exp-swaye-logo {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 22px;
+            margin-bottom: 24px;
+        }
+        .exp-swaye-logo::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(226, 143, 174, 0.6);
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
+        }
+        .exp-swaye-logo::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            right: -12px;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.5) 20%, transparent 40%, transparent 60%, rgba(226, 143, 174, 0.5) 80%, transparent);
+            pointer-events: none;
+        }
+        .exp-swaye-logo span {
+            font-family: 'Cinzel', serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.35em;
+            color: var(--rose-gold-light);
+            text-transform: uppercase;
+            text-indent: 0.35em;
+        }
+
+        .exp-header { margin-bottom: 28px; }
+        .exp-subhead {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            line-height: 1.35;
+            color: #ffd8e8;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+        }
+        .exp-main-title {
+            font-family: 'Cinzel', serif;
+            font-size: 44px;
+            font-weight: 700;
+            letter-spacing: 0.03em;
+            line-height: 1.0;
+            margin-top: 4px;
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 30%, #e28fae 75%, #a63f68 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.4));
+        }
+
+        .exp-list { width: 100%; display: flex; flex-direction: column; gap: 4px; }
+        .exp-row {
+            position: relative;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 14px 0 10px;
+        }
+        .exp-row::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 85%;
+            height: 1px;
+            background: linear-gradient(90deg, rgba(226, 143, 174, 0.5) 0%, rgba(226, 143, 174, 0.2) 60%, transparent 100%);
+        }
+        .exp-row-glint {
+            position: absolute;
+            top: -6px;
+            left: -4px;
+            width: 12px;
+            height: 12px;
+            background: radial-gradient(circle, #ffffff 20%, rgba(255, 200, 230, 0.9) 50%, transparent 70%);
+            clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+            filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+            animation: glintTwinkle 2.5s infinite ease-in-out;
+        }
+        .exp-row:nth-child(2) .exp-row-glint { left: 45%; animation-delay: 0.8s; }
+        .exp-row:nth-child(3) .exp-row-glint { left: -4px; animation-delay: 1.6s; }
+        .exp-row:nth-child(4) .exp-row-glint { left: 35%; animation-delay: 2.2s; }
+
+        .exp-content {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: 100%;
+            row-gap: 8px;
+        }
+
+        .exp-top-line {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .exp-icon-wrap {
+            width: 42px;
+            height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            color: #ff3388;
+        }
+        .exp-icon-wrap svg {
+            display: block;
+            height: 42px;
+            width: 42px;
+            color: #f7589a;
+            fill: currentColor;
+            filter: drop-shadow(0 0 3px rgba(255, 0, 127, 0.75)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+            animation: neonIconGlow 3.5s infinite alternate ease-in-out;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), filter 0.3s ease;
+        }
+
+        @keyframes neonIconGlow {
+            0%, 100% {
+                filter: drop-shadow(0 0 2px rgba(255, 0, 127, 0.6)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+                transform: scale(1);
+            }
+            50% {
+                filter: drop-shadow(0 0 4px rgba(255, 50, 150, 0.85)) drop-shadow(0 1px 3px rgba(0, 0, 0, 0.9));
+                transform: scale(1.04);
+            }
+        }
+
+        .exp-row:hover .exp-icon-wrap svg {
+            filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.95)) drop-shadow(0 1px 4px rgba(0, 0, 0, 0.9));
+            transform: scale(1.1) rotate(3deg);
+        }
+
+        .exp-bold-text {
+            font-family: 'Cinzel', serif;
+            font-size: 38px;
+            font-weight: 700;
+            line-height: 1.0;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 30%, #e28fae 75%, #b55075 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.8));
+        }
+
+        .exp-bottom-line {
+            display: flex;
+            align-items: baseline;
+            gap: 10px;
+            margin-top: -2px;
+            padding-left: 58px;
+        }
+
+        .exp-script-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 24px;
+            color: #ffb8d1;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.7);
+            line-height: 1.0;
+        }
+
+      
+
+        /* ══════════════════════════════════════════════
+           SECTION 3: EARLY ACCESS SWIPER CAROUSEL (EQUAL HEIGHT)
+        ══════════════════════════════════════════════════ */
+        .pricing-section {
+            position: relative;
+            width: 100%;
+            background: linear-gradient(180deg, #0d0409 0%, rgba(13, 4, 9, 0.4) 15%, rgba(13, 4, 9, 0.2) 80%, #0d0409 100%),
+                        url('images/pricing_sec_bg.avif') top center / cover no-repeat;
+            padding: 40px 10px 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .pricing-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 40%, rgba(255, 0, 127, 0.05) 0%, rgba(13, 4, 9, 0.3) 60%, rgba(13, 4, 9, 0.8) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .pricing-container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .pricing-brand-title {
+            position: relative;
+            font-family: 'Cinzel', serif;
+            font-size: 3.2rem;
+            font-weight: 900;
+            letter-spacing: 0.16em;
+            text-indent: 0.16em;
+            line-height: 1.0;
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 30%, #e28fae 75%, #a63f68 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 15px rgba(255, 0, 127, 0.45));
+            display: inline-block;
+        }
+        .pricing-brand-title .title-glint {
+            position: absolute;
+            top: -2px;
+            right: 0px;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle, #ffffff 20%, rgba(255, 200, 230, 0.9) 50%, transparent 70%);
+            clip-path: polygon(50% 0%, 60% 40%, 100% 50%, 60% 60%, 50% 100%, 40% 60%, 0% 50%, 40% 40%);
+            filter: drop-shadow(0 0 6px #fff) drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+            animation: glintTwinkle 2.8s infinite ease-in-out;
+        }
+
+        .pricing-ticket-label {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 600;
+            letter-spacing: 0.35em;
+            text-indent: 0.35em;
+            color: #e28fae;
+            text-transform: uppercase;
+            margin: 6px 0 8px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.35);
+        }
+
+        .pricing-star-divider {
+            color: #e28fae;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+            opacity: 0.8;
+        }
+
+        .phase-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 20px;
+            border: 1.2px solid rgba(226, 143, 174, 0.7);
+            border-radius: 40px;
+            background: rgba(22, 6, 17, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            color: #ffe6f0;
+            text-transform: uppercase;
+            box-shadow: 0 0 16px rgba(255, 0, 127, 0.3);
+            margin-bottom: 6px;
+        }
+        .phase-pill .pill-star { color: #ffb8d1; font-size: 0.85rem; }
+
+        .people-max-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            text-indent: 0.22em;
+            color: #c47696;
+            text-transform: uppercase;
+            margin-bottom: 22px;
+        }
+
+        /* ── Swiper Carousel (Equal Height Cards) ── */
+        .pricing-swiper {
+            width: 100%;
+            padding: 10px 0 40px;
+            overflow: visible;
+        }
+        .pricing-swiper .swiper-wrapper {
+            display: flex;
+            align-items: stretch; /* Forces equal slide heights */
+        }
+        .pricing-swiper .swiper-slide {
+            width: 84%;
+            max-width: 330px;
+            height: auto; /* Required for equal height flex */
+            display: flex;
+            opacity: 0.4;
+            transform: scale(0.9);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+        .pricing-swiper .swiper-slide-active {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Equal-Height Redesigned Luxury VIP Card */
+        .price-card-v3 {
+            position: relative;
+            width: 100%;
+            min-height: 480px;
+            background: rgba(24, 6, 19, 0.85);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1.5px solid rgba(226, 143, 174, 0.6);
+            border-radius: 18px;
+            padding: 28px 14px 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.85), 0 0 25px rgba(255, 0, 127, 0.25), inset 0 0 20px rgba(226, 143, 174, 0.1);
+            cursor: pointer;
+            overflow: hidden;
+        }
+        .price-card-v3::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff99cc 50%, transparent);
+        }
+
+        .card-top-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card-icon-area-v3 {
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+        }
+        .card-icon-area-v3 svg {
+            stroke: #ffb8d1;
+            filter: drop-shadow(0 0 8px rgba(255, 0, 127, 0.7));
+        }
+
+        .card-type-title-v3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.05rem;
+            font-weight: 800;
+            letter-spacing: 0.22em;
+            text-indent: 0.22em;
+            color: #ffffff;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.5);
+        }
+
+        .card-inner-divider-v3 {
+            position: relative;
+            width: 85%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.6) 50%, transparent);
+            margin-bottom: 14px;
+        }
+        .card-inner-divider-v3::after {
+            content: '✦';
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 9px;
+            color: #ffb8d1;
+            background: rgba(24, 6, 19, 0.95);
+            padding: 0 6px;
+        }
+
+        .card-price-value-v3 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 35%, #e28fae 80%, #b55075 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.0;
+            filter: drop-shadow(0 2px 8px rgba(0,0,0,0.9)) drop-shadow(0 0 15px rgba(255, 0, 127, 0.4));
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+        }
+        .card-price-value-v3 .rupee-sign {
+            font-size: 1.6rem;
+            margin-right: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 400;
+        }
+
+        .card-per-sub-v3 {
+            font-family: 'Cinzel', serif;
+            font-size: 0.92rem;
+            color: #e28fae;
+            margin-top: 4px;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+        }
+
+        /* Perks list to make card rich and uniform */
+        .card-perks-list {
+            width: 100%;
+            margin: 16px 0 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+            padding: 0 10px;
+        }
+        .card-perk-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            color: #fce2ec;
+            letter-spacing: 0.04em;
+        }
+        .card-perk-item svg {
+            stroke: #ff007f;
+            flex-shrink: 0;
+        }
+
+        .effectively-pill-v3 {
+            border: 1px solid rgba(226, 143, 174, 0.5);
+            border-radius: 6px;
+            padding: 6px 12px;
+            width: 100%;
+            background: rgba(255, 0, 127, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .eff-label-v3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.55rem;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            color: #ffb8d1;
+            text-transform: uppercase;
+            line-height: 1.2;
+        }
+        .eff-val-v3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: 0.05em;
+            line-height: 1.2;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        /* Bottom Section inside Card */
+        .card-bottom-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .card-select-btn {
+            width: 100%;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1.2px solid rgba(226, 143, 174, 0.6);
+            background: linear-gradient(135deg, rgba(255, 0, 127, 0.3) 0%, rgba(179, 27, 84, 0.5) 100%);
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.78rem;
+            font-weight: 700;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(255, 0, 127, 0.25);
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .price-card-v3:hover .card-select-btn {
+            background: linear-gradient(135deg, #ff007f 0%, #b31b54 100%);
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.5);
+        }
+
+        /* Swiper Pagination */
+        .swiper-pagination { bottom: 0 !important; }
+        .swiper-pagination-bullet {
+            width: 8px;
+            height: 8px;
+            background: rgba(226, 143, 174, 0.4);
+            opacity: 1;
+            transition: all 0.3s;
+        }
+        .swiper-pagination-bullet-active {
+            width: 24px;
+            border-radius: 4px;
+            background: #ff007f;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.8);
+        }
+
+        .pricing-tagline {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.26em;
+            text-indent: 0.26em;
+            color: #e28fae;
+            text-transform: uppercase;
+            margin: 16px 0 14px;
+            text-shadow: 0 0 10px rgba(255, 0, 127, 0.35);
+        }
+
+        .pricing-bottom-oval {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3px 22px;
+        }
+        .pricing-bottom-oval::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border: 1px solid rgba(226, 143, 174, 0.6);
+            border-radius: 50px;
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);
+        }
+        .pricing-bottom-oval::after {
+            content: '';
+            position: absolute;
+            left: -12px;
+            right: -12px;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.5) 20%, transparent 40%, transparent 60%, rgba(226, 143, 174, 0.5) 80%, transparent);
+            pointer-events: none;
+        }
+        .pricing-bottom-oval span {
+            font-family: 'Cinzel', serif;
+            font-size: 0.82rem;
+            font-weight: 700;
+            letter-spacing: 0.35em;
+            color: var(--rose-gold-light);
+            text-transform: uppercase;
+            text-indent: 0.35em;
+        }
+
+        /* ══════════════════════════════════════════════
+           MIDDLE INTERACTIVE SECTIONS (LOCATION & RSVP)
+        ══════════════════════════════════════════════ */
+        .flowing-content {
+            position: relative;
+            z-index: 3;
+            padding: 25px 16px 20px;
+            background: linear-gradient(180deg, #0d0409 0%, #170712 50%, #0d0409 100%);
+        }
+
+        .glass-panel {
+            background: rgba(25, 7, 18, 0.65);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(226, 143, 174, 0.3);
+            border-radius: 14px;
+            padding: 22px 18px;
+            margin-bottom: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5), 0 0 15px rgba(255, 0, 127, 0.1);
+        }
+
+        .sec-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.45rem;
+            text-align: center;
+            margin-bottom: 18px;
+            color: #ffffff;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            background: linear-gradient(180deg, #ffffff 0%, #ffdfeb 50%, #e28fae 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
+        }
+
+        /* Secret Location */
+        .map-wrap {
+            position: relative;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(226, 143, 174, 0.35);
+        }
+        .map-wrap img { width: 100%; display: block; opacity: 0.75; }
+        .map-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(17, 4, 12, 0.65);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+        .map-overlay p {
+            font-family: 'Cinzel', serif;
+            font-size: 0.98rem;
+            color: #ffffff;
+            letter-spacing: 0.08em;
+            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+        }
+
+        /* ── RSVP Form with Custom Bootstrap-Like Validation ── */
+        .form-subtitle {
+            font-size: 0.76rem;
+            color: #d88ba8;
+            text-align: center;
+            margin-bottom: 18px;
+            letter-spacing: 0.04em;
+            line-height: 1.4;
+        }
+        .form-group {
+            margin-bottom: 16px;
+            text-align: left;
+            position: relative;
+        }
+        .form-label {
+            display: block;
+            font-size: 0.7rem;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--rose-gold);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        .form-input, .form-select {
+            width: 100%;
+            background: rgba(20, 5, 15, 0.6);
+            border: 1px solid rgba(226, 143, 174, 0.35);
+            padding: 12px 14px;
+            border-radius: 8px;
+            color: #fff;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.88rem;
+            outline: none;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+        .form-input:focus, .form-select:focus {
+            border-color: var(--magenta-glow);
+            box-shadow: 0 0 12px rgba(255, 0, 127, 0.3);
+        }
+        .form-select option { background: #170712; color: #fff; }
+
+        /* Bootstrap-like Validation Classes (Custom CSS) */
+        .form-input.is-invalid, .form-select.is-invalid {
+            border-color: #ff3366 !important;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.35) !important;
+        }
+        .form-input.is-valid, .form-select.is-valid {
+            border-color: #33cc88 !important;
+            box-shadow: 0 0 10px rgba(51, 204, 136, 0.25) !important;
+        }
+        .invalid-feedback {
+            display: none;
+            font-size: 0.68rem;
+            color: #ff6688;
+            margin-top: 4px;
+            letter-spacing: 0.04em;
+            font-weight: 500;
+        }
+        .form-input.is-invalid ~ .invalid-feedback,
+        .form-select.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        .form-partner-divider {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 22px 0 16px;
+            position: relative;
+        }
+        .form-partner-divider::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 50%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.45) 30%, rgba(255, 0, 127, 0.6) 50%, rgba(226, 143, 174, 0.45) 70%, transparent);
+        }
+        .form-partner-divider span {
+            position: relative;
+            background: #170712;
+            padding: 3px 14px;
+            font-size: 0.68rem;
+            font-weight: 700;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+            color: #ffb8d1;
+            border-radius: 20px;
+            border: 1px solid rgba(226, 143, 174, 0.35);
+            box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+        }
+
+        .checkout-total {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 0 8px;
+            border-top: 1px solid rgba(226, 143, 174, 0.25);
+            margin-top: 10px;
+        }
+        .checkout-total span { font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.12em; color: #bbb; }
+        .checkout-total strong { font-family: 'Cinzel', serif; font-size: 1.4rem; color: #ffb8d1; }
+
+        .payment-info-note {
+            font-size: 0.68rem;
+            color: #c47696;
+            margin-bottom: 18px;
+            line-height: 1.4;
+            letter-spacing: 0.02em;
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            background: linear-gradient(135deg, #ff007f 0%, #b31b54 100%);
+            color: #fff;
+            border: none;
+            padding: 16px;
+            font-size: 0.92rem;
+            font-weight: 700;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 0, 127, 0.45);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s, opacity 0.3s;
+            position: relative;
+        }
+        .btn:active { transform: scale(0.98); box-shadow: 0 2px 10px rgba(255, 0, 127, 0.3); }
+        .btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.75;
+            background: linear-gradient(135deg, #7a0b38 0%, #3d051c 100%);
+            box-shadow: none;
+            pointer-events: none;
+        }
+        .btn-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2.5px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: #ffffff;
+            animation: btnSpin 0.75s linear infinite;
+        }
+        @keyframes btnSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Confirmation Notice Box */
+        .confirmation-notice {
+            display: none;
+            padding: 14px;
+            border-radius: 8px;
+            background: rgba(255, 0, 127, 0.12);
+            border: 1px solid rgba(255, 0, 127, 0.4);
+            margin-top: 14px;
+            font-size: 0.78rem;
+            color: #ffe6f0;
+            line-height: 1.45;
+            text-align: center;
+        }
+
+        /* ══════════════════════════════════════════════
+           SECTION 4: FOOTER / BRAND MANIFESTO (EXACT REPLICA)
+        ══════════════════════════════════════════════════ */
+        .footer-manifesto-sec {
+            position: relative;
+            width: 100%;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0d0409 0%, rgba(13, 4, 9, 0.4) 15%, rgba(13, 4, 9, 0.25) 80%, #0d0409 100%),
+                        url('images/footer_manifesto_bg.avif') center top / cover no-repeat;
+            padding: 40px 14px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .footer-manifesto-sec::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(179, 27, 84, 0.1) 0%, rgba(13, 4, 9, 0.4) 60%, rgba(13, 4, 9, 0.85) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .manifesto-container {
+            position: relative;
+            z-index: 3;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .manifesto-top-bar {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 16px;
+            padding: 0 6px;
+        }
+        .alcohol-free-tag {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.62rem;
+            font-weight: 700;
+            letter-spacing: 0.3em;
+            text-indent: 0.3em;
+            color: #e28fae;
+            text-transform: uppercase;
+        }
+
+        .glitter-swaye-wrap {
+            position: relative;
+            width: 100%;
+            margin: 12px 0 16px;
+        }
+        .glitter-swaye-text {
+            font-family: 'Great Vibes', cursive;
+            font-size: 5.4rem;
+            line-height: 1.4;
+            padding-right: 8px;
+            color: #ff3377;
+            background: linear-gradient(180deg, #ffffff 0%, #ff80aa 25%, #ff1a66 60%, #cc0044 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(255, 0, 127, 0.9)) drop-shadow(0 0 35px rgba(255, 0, 127, 0.5)) drop-shadow(0 2px 8px rgba(0, 0, 0, 0.9));
+        }
+
+        .manifesto-deco-lips-1 {
+            position: absolute;
+            top: -15px;
+            left: 10%;
+            width: 44px;
+            height: 32px;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+        }
+        .manifesto-deco-lips-2 {
+            position: absolute;
+            bottom: -15px;
+            right: 12%;
+            width: 44px;
+            height: 32px;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+        }
+        .manifesto-deco-star-1 {
+            position: absolute;
+            top: -10px;
+            right: 14%;
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+        }
+        .manifesto-deco-star-2 {
+            position: absolute;
+            bottom: -10px;
+            left: 14%;
+            width: 36px;
+            height: 36px;
+            filter: drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+        }
+
+        .manifesto-headline { margin: 18px 0 14px; }
+        .manifesto-headline h3 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            line-height: 1.8;
+            color: #ffe6f0;
+            text-transform: uppercase;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.5), 0 2px 4px rgba(0, 0, 0, 0.8);
+        }
+
+        .manifesto-body { margin-bottom: 18px; }
+        .manifesto-body p {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.82rem;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            line-height: 1.7;
+            color: #f7bbd0;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.9);
+        }
+
+        .manifesto-zero-block { margin-bottom: 20px; }
+        .manifesto-zero-block h4 {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.92rem;
+            font-weight: 800;
+            letter-spacing: 0.18em;
+            line-height: 1.4;
+            color: #ffe6f0;
+            text-transform: uppercase;
+            text-shadow: 0 0 12px rgba(255, 0, 127, 0.4);
+        }
+
+        .manifesto-pillars-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            letter-spacing: 0.26em;
+            text-indent: 0.26em;
+            color: #e28fae;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+        }
+        .manifesto-pillars-row .pillar-glint {
+            color: #ffb8d1;
+            font-size: 0.85rem;
+            filter: drop-shadow(0 0 6px #fff);
+        }
+
+
+        .manifesto-coming-script {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.1rem;
+            color: #ffb8d1;
+            text-shadow: 0 0 15px rgba(255, 0, 127, 0.6);
+            margin-bottom: 4px;
+        }
+
+
+        .footer-credit {
+            margin-top: 10px;
+            font-size: 0.7rem;
+            color: #bbbbbb;
+            letter-spacing: 0.08em;
+        }
+        .footer-credit a {
+            color: var(--rose-gold);
+            text-decoration: none;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Landscape Warning -->
+    <div id="landscape-warning">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke-width="1.5">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <path d="M12 18h.01"></path>
+        </svg>
+        <h2>Please Rotate Your Device</h2>
+        <p>This invitation is beautifully crafted for portrait viewing.</p>
+    </div>
+
+    <!-- Background Audio -->
+    <audio id="bg-music" loop src="images/let-me-love-you-feat-justin-bieber-64-kbps.mp3"></audio>
+
+    <!-- Floating Audio FAB -->
+    <div id="mfab" title="Toggle Music">
+        <!-- Unmuted Icon -->
+        <svg class="icon-unmuted" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        <!-- Muted Icon -->
+        <svg class="icon-muted" viewBox="0 0 24 24">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+        </svg>
+    </div>
+
+    <!-- Video Intro Layer -->
+     <!-- https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4 -->
+    <div id="curtain-layer">
+        <video id="curtain-video" src="https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4" playsinline disablePictureInPicture webkit-playsinline preload="auto" poster="images/Swaye_IntroThumb.webp"></video>
+        <div class="tap-overlay">
+            <div class="tap-text">Tap anywhere to open</div>
+        </div>
+    </div>
+
+    <!-- HTML5 Canvas Background -->
+    <canvas id="disco-canvas"></canvas>
+
+    <!-- Main Container -->
+    <div id="app">
+        
+        <!-- ══════════════════════════════════════════════
+             SECTION 1: HERO / BANNER
+        ══════════════════════════════════════════════ -->
+        <section class="hero-banner-sec" id="hero-section">
+            
+            <!-- Top Group: Logo & Headline -->
+            <div class="hero-top-group">
+                
+                <!-- Oval Logo -->
+                <div class="swaye-oval-logo">
+                    <span>SWAYÉ</span>
+                </div>
+
+                <!-- Main Title with Sparkle Glints -->
+                <div class="hero-title-wrap">
+                    <div class="glint glint-1"></div>
+                    <div class="glint glint-2"></div>
+                    <div class="glint glint-3"></div>
+                    
+                    <div class="hero-title-the">THE</div>
+                    <h1 class="hero-title-main">
+                        <span class="word-ultimate glitter-text-clip">ULTIMATE</span>
+                        <span class="word-night glitter-text-clip">NIGHT</span>
+                    </h1>
+                </div>
+
+            </div>
+
+            <!-- Bottom Group: Date Card, Script & Scroll Indicator -->
+            <div class="hero-bottom-group">
+                
+                <!-- Ticket Box: SAVE THE DATE -->
+                <div class="save-the-date-card">
+                    <div class="corner-notch cn-tl"></div>
+                    <div class="corner-notch cn-tr"></div>
+                    <div class="corner-notch cn-bl"></div>
+                    <div class="corner-notch cn-br"></div>
+                    
+                    <div class="date-time-line">
+                        THU. OCT 1<sup>st</sup> <span class="pipe">|</span> 9:00 PM
+                    </div>
+                    <div class="save-the-date-title">
+                        SAVE THE DATE
+                    </div>
+                </div>
+
+                <!-- Neon Script: The Premium Night Experience -->
+                <div class="swaye-presents">
+                    <span class="neon-script-glow">The Premium Night Experience</span>
+                    <div class="neon-underline-bar"></div>
+                </div>
+
+                <!-- Scroll Down Indicator -->
+                <div class="scroll-down-wrap" id="scroll-indicator">
+                    <span>Scroll to explore</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                    </svg>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ══════════════════════════════════════════════
+             SECTION 2: WHAT YOU'RE ABOUT TO EXPERIENCE
+        ══════════════════════════════════════════════ -->
+        <section class="experience-sec" id="experience-section">
+            <div class="exp-container">
+                
+                <!-- Top Oval Logo -->
+                <div class="exp-swaye-logo">
+                    <span>SWAYÉ</span>
+                </div>
+
+                <!-- Header -->
+                <div class="exp-header">
+                    <div class="exp-subhead">WHAT YOU'RE ABOUT TO</div>
+                    <h2 class="exp-main-title glitter-text-clip">EXPERIENCE</h2>
+                </div>
+
+                <!-- Hidden SVG Defs for Gradients -->
+                <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" aria-hidden="true">
+                    <defs>
+                        <linearGradient id="pinkGlintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" stop-color="#ffffff"/>
+                            <stop offset="30%" stop-color="#ffb8d1"/>
+                            <stop offset="70%" stop-color="#e28fae"/>
+                            <stop offset="100%" stop-color="#b31b54"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+
+                <!-- List Items -->
+                <div class="exp-list">
+                    
+                    <!-- Row 1: LA Vibes -->
+                    <div class="exp-row">
+                        <div class="exp-row-glint"></div>
+                        <div class="exp-content">
+                            <div class="exp-top-line">
+                                <div class="exp-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24">
+	<path d="M0 0h24v24H0z" fill="none" />
+	<path fill="currentColor" d="M5.75 14q0-1 .09-2a.26.26 0 0 0-.06-.19a.27.27 0 0 0-.19-.08H2.5a.26.26 0 0 0-.24.19A8.7 8.7 0 0 0 2 14a8.3 8.3 0 0 0 .26 2.07a.24.24 0 0 0 .24.19h3.09a.27.27 0 0 0 .19-.08a.26.26 0 0 0 .06-.18q-.09-1-.09-2m7.9-2a.26.26 0 0 0-.25-.22H7.6a.26.26 0 0 0-.25.22c-.06.64-.1 1.32-.1 2s0 1.39.1 2a.26.26 0 0 0 .25.22h5.8a.26.26 0 0 0 .25-.22c.06-.64.1-1.32.1-2s-.04-1.39-.1-2m4.84 4.25a.26.26 0 0 0 .25-.19A8.8 8.8 0 0 0 19 14a8.7 8.7 0 0 0-.25-2.05a.26.26 0 0 0-.24-.19h-3.1a.23.23 0 0 0-.18.08a.23.23 0 0 0-.07.19q.09 1 .09 2t-.09 2a.23.23 0 0 0 .07.19a.23.23 0 0 0 .18.08ZM7.9 17.75a.23.23 0 0 0-.22.27c.61 2.61 1.76 4.23 2.82 4.23s2.2-1.61 2.81-4.19a.22.22 0 0 0-.05-.21a.26.26 0 0 0-.19-.1Zm7.22 0a.26.26 0 0 0-.25.2a11.9 11.9 0 0 1-1.2 3.43a.25.25 0 0 0 .32.35a8.54 8.54 0 0 0 3.93-3.61a.25.25 0 0 0 0-.25a.24.24 0 0 0-.21-.12ZM6.13 18a.26.26 0 0 0-.25-.2H3.3a.24.24 0 0 0-.21.12a.25.25 0 0 0 0 .25A8.54 8.54 0 0 0 7 21.73a.25.25 0 0 0 .32-.35A11.9 11.9 0 0 1 6.13 18m-.25-7.75a.26.26 0 0 0 .25-.2A11.9 11.9 0 0 1 7.34 6.6a.24.24 0 0 0 0-.29a.24.24 0 0 0-.34-.06a8.53 8.53 0 0 0-3.93 3.63a.25.25 0 0 0 0 .25a.24.24 0 0 0 .21.12Zm8.99-.2a.26.26 0 0 0 .25.2h2.59a.24.24 0 0 0 .21-.12a.25.25 0 0 0 0-.25A8.53 8.53 0 0 0 14 6.25a.25.25 0 0 0-.29.06a.25.25 0 0 0 0 .29a11.9 11.9 0 0 1 1.16 3.45m-3.29-3.78a.23.23 0 0 1-.08-.17V1a1 1 0 0 0-2 0v5.1a.23.23 0 0 1-.08.17a7.9 7.9 0 0 0-1.73 3.67a.25.25 0 0 0 0 .22a.3.3 0 0 0 .2.09h5.13a.25.25 0 0 0 .24-.31a7.8 7.8 0 0 0-1.68-3.67M18.75 6a.76.76 0 0 0 .75-.75v-.5a.25.25 0 0 1 .25-.25h.5a.75.75 0 0 0 0-1.5h-.5a.25.25 0 0 1-.25-.25v-.5a.75.75 0 0 0-1.5 0v.5a.25.25 0 0 1-.25.25h-.5a.75.75 0 0 0 0 1.5h.5a.25.25 0 0 1 .25.25v.5a.76.76 0 0 0 .75.75m4.5 14.5h-1a.25.25 0 0 1-.25-.25v-1a.75.75 0 0 0-1.5 0v1a.25.25 0 0 1-.25.25h-1a.75.75 0 0 0 0 1.5h1a.25.25 0 0 1 .25.25v1a.75.75 0 0 0 1.5 0v-1a.25.25 0 0 1 .25-.25h1a.75.75 0 0 0 0-1.5M3.75 4h-.5A.25.25 0 0 1 3 3.75v-.5a.75.75 0 0 0-1.5 0v.5a.25.25 0 0 1-.25.25h-.5a.75.75 0 0 0 0 1.5h.5a.25.25 0 0 1 .25.25v.5a.75.75 0 0 0 1.5 0v-.5a.25.25 0 0 1 .25-.25h.5a.75.75 0 0 0 0-1.5" />
+</svg>
+
+                                </div>
+                                <span class="exp-bold-text glitter-text-clip">LA</span>
+                            </div>
+                            <div class="exp-bottom-line">
+                                <span class="exp-script-text neon-script-glow">Vibes</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: 2012 Summer Nostalgia -->
+                    <div class="exp-row">
+                        <div class="exp-row-glint"></div>
+                        <div class="exp-content">
+                            <div class="exp-top-line">
+                                <div class="exp-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 512 512">
+	<path d="M0 0h512v512H0z" fill="none" />
+	<path fill="currentColor" d="m369.1 24.54l-12.6 12.92c-9.2 14.71-9.7 34.33-7.6 53.05c-2.9-.39-5.9-.46-8.9-.2c-16.1 1.38-28.4 11.59-27.4 22.89c1 11.2 14.8 19.2 30.9 17.8c8.8-.7 17-4.2 22.1-9.5c1.7 10.8 15.2 18.2 30.7 16.9c16.1-1.4 28.4-11.6 27.4-22.9c-.2-2.3-.9-4.5-2.1-6.5c-3.4-19.63-4.2-38.02 4.8-57.07c-18.6-5.91-44-16.31-57.3-27.39m2.4 24.77c10.1 6.59 21.3 11.42 32 14.24c-2.6 11.7-2.6 23.19-1.6 34.32c-3-.42-6-.5-9.1-.24c-8.8.77-16.9 4.27-22 9.57c-.3-2-1.1-3.9-2.2-5.7c-3.1-17.98-3.9-34.87 2.9-52.19M111.4 63.88c-13.92 5.83-36.33 8.22-53.82 3.71l-4.5 17.43c2.08 18.88 10 35.28 19.99 49.68a20.44 29.25 55.36 0 0-8.08 4.4a20.44 29.25 55.36 0 0-12.45 33.4a20.44 29.25 55.36 0 0 35.69.2a20.44 29.25 55.36 0 0 12.47-33.4a20.44 29.25 55.36 0 0-5.4-4.7c-11.6-14-20.7-28.3-23.28-46.69c16.57.96 33.18-1.91 46.38-7.43zM151 167v48h16v-32h178v32h16v-48zM25 233v238h462V233zm39 14h64v18H64zm112 0h160v18H176zm208 0h64v18h-64zM48 279h416v18H48zm64 32c40.2 0 73 32.8 73 73s-32.8 73-73 73c-40.21 0-73-32.8-73-73s32.79-73 73-73m87 0h114v82H199zm201 0c40.2 0 73 32.8 73 73s-32.8 73-73 73s-73-32.8-73-73s32.8-73 73-73m-288 18c-30.48 0-55 24.5-55 55s24.52 55 55 55c30.5 0 55-24.5 55-55s-24.5-55-55-55m105 0v46h78v-46zm183 0c-30.5 0-55 24.5-55 55s24.5 55 55 55s55-24.5 55-55s-24.5-55-55-55m-288 30c13.7 0 25 11.3 25 25s-11.3 25-25 25s-25-11.3-25-25s11.3-25 25-25m288 0c13.7 0 25 11.3 25 25s-11.3 25-25 25s-25-11.3-25-25s11.3-25 25-25m-288 18c-4 0-7 3-7 7s3 7 7 7s7-3 7-7s-3-7-7-7m288 0c-4 0-7 3-7 7s3 7 7 7s7-3 7-7s-3-7-7-7m-185 39h18v32h-18zm32 0h18v32h-18zm32 0h18v32h-18z" />
+</svg>
+
+                                </div>
+                                <span class="exp-bold-text glitter-text-clip">2026</span>
+                            </div>
+                            <div class="exp-bottom-line">
+                                <span class="exp-script-text neon-script-glow">Summer Nostalgia</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Glitter Daze -->
+                    <div class="exp-row">
+                        <div class="exp-row-glint"></div>
+                        <div class="exp-content">
+                            <div class="exp-top-line">
+                                <div class="exp-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 80 80">
+	<path d="M0 0h80v80H0z" fill="none" />
+	<path fill="currentColor" fill-rule="evenodd" d="M70.899 33.144L57.513 22.732a12.97 12.97 0 0 0-16.066.11l-1.336 1.069a.18.18 0 0 1-.222 0l-1.336-1.069a12.97 12.97 0 0 0-16.066-.11L9.101 33.144a2.85 2.85 0 0 0-.855 3.409l2.063 4.642a26.8 26.8 0 0 0 4.457 6.917l2.784 3.132A26.1 26.1 0 0 0 37.05 60h5.902a26.1 26.1 0 0 0 19.499-8.756l2.784-3.132a26.8 26.8 0 0 0 4.457-6.917l2.063-4.642a2.85 2.85 0 0 0-.855-3.41m-35.848 1.248l-.587-.202a13.2 13.2 0 0 0-7.045-.423l-9.853 2.112a.716.716 0 0 0-.198 1.325l7.162 3.979c.977.543 2.013.972 3.087 1.279l2.399.685a36.35 36.35 0 0 0 19.969 0l2.398-.685a14.6 14.6 0 0 0 3.087-1.279l7.194-3.997a.652.652 0 0 0-.176-1.207l-9.857-2.177a13.2 13.2 0 0 0-7.147.406l-.535.184a15.23 15.23 0 0 1-9.898 0" clip-rule="evenodd" />
+</svg>
+
+                                </div>
+                                <span class="exp-bold-text glitter-text-clip">GLITTER</span>
+                            </div>
+                            <div class="exp-bottom-line">
+                                <span class="exp-script-text neon-script-glow">Daze</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Body Kinetic -->
+                    <div class="exp-row">
+                        <div class="exp-row-glint"></div>
+                        <div class="exp-content">
+                            <div class="exp-top-line">
+                                <div class="exp-icon-wrap">
+                                    <svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em" x="0" y="0" viewBox="0 0 512 512" style="enable-background:new 0 0 512 512" xml:space="preserve" class=""><g><path d="M88 360h16v16H88zM72 376h16v16H72zM104 376h16v16h-16zM88 392h16v16H88zM432 32h16v16h-16zM408 56h16v16h-16zM456 56h16v16h-16zM432 80h16v16h-16zM153.187 145.3a27.93 27.93 0 0 0 28.792 11.913l15.772-3.153-6.4 44.807a8 8 0 0 0 6.787 9.05l7.83 1.121c3.082.441 6.192.835 9.3 1.188v18.461l-45.655 45.654a8 8 0 0 0 2.079 12.812l6.071 3.036-5.082 5.082a33.9 33.9 0 0 0-8.45 34.039l25.975 84.437-2.705 2.7a48.94 48.94 0 0 0-11.825 50.07 8 8 0 0 0 10.743 4.83l56-24a8 8 0 0 0 4.541-9.55l-15.3-53.57a9 9 0 0 0-.115-.371l-15.292-53.533 18.408-18.408q11.092 2.931 22.385 4.958l-12.88 30.067a33.77 33.77 0 0 0-.326 26.025l26.437 66.095-2.554 3.835a48.63 48.63 0 0 0-5.715 42.619l1.67 5.01a8 8 0 0 0 10.741 4.823l56-24a8 8 0 0 0 4.233-10.43l-38.783-93.078 17.449-46.533q11.364-.23 22.748-1.352a8 8 0 0 0 6.065-12.076l-46.861-78.1V209.3c3.178-.435 6.3-.9 9.32-1.408a8 8 0 0 0 6.524-9.459L308.3 184.34l36.1 36.107a13.9 13.9 0 0 0 6.714 3.732l46.329 10.85c.159.038.319.056.478.084.113.019.222.05.337.065l29.361 3.746c.4.052.808.108 1.21.163a42 42 0 0 0 5.864.505c5.234 0 11.6-1.562 17.29-9.026q.156-.2.3-.415a22.115 22.115 0 0 0-10.188-32.8 8 8 0 0 0-2.455-.555l-22.573-1.458-45-18.037-42.231-49.272a36.04 36.04 0 0 0 3.312-34.207 35.7 35.7 0 0 0-8.11-11.848l-.638-.619a61.8 61.8 0 0 1-15.65-26A56.006 56.006 0 0 0 199.27 72v12.65a59 59 0 0 0 5.165 24.245l-17.305 2.473-39.136-58.7a23.529 23.529 0 1 0-39.151 26.107zm65.385 251.359 11.071 38.761-40.43 17.327q-.042-.839-.043-1.679a32.74 32.74 0 0 1 9.647-23.3l6.11-6.11a8 8 0 0 0 1.989-8.008l-3.655-11.882zm-16.96-74.318a8 8 0 0 0-2.035 7.854l14.587 51.067-15.608 5.206-19.032-61.868A17.94 17.94 0 0 1 184 306.587l9.141-9.141q11.867 5.19 24.1 9.271zm98.7 97.747 16.532 39.677-40.567 17.385a32.7 32.7 0 0 1 4.766-25.377l4.89-7.339a8 8 0 0 0 .769-7.408l-4.377-10.942zm-20.528-54.9a8 8 0 0 0 .106 5.886l14.252 34.2-17.769 5.923-17.673-44.168a18.12 18.12 0 0 1 .176-13.779l14.53-33.918q11.388 1.371 22.887 1.825zm41.97-60.18A269.56 269.56 0 0 1 188.783 277.8l37.8-37.8h56.157zM231.27 224v-12.37c6.745.423 13.538.65 20.29.65 9.2 0 18.479-.4 27.71-1.194V224zm188.1-12.477 17.709 1.144a6.123 6.123 0 0 1 2.014 8.423c-2.3 2.943-3.372 2.8-8.073 2.147-.452-.062-.9-.124-1.363-.183l-16.564-2.114zM215.27 72a40.006 40.006 0 0 1 78.2-11.889 77.8 77.8 0 0 0 19.789 32.733l.647.628A20.1 20.1 0 0 1 320 107.89a20.1 20.1 0 0 1-3.221 10.855c-.077-.026-.153-.059-.23-.085l-35.44-11.811A31.8 31.8 0 0 0 287.272 88V64a8 8 0 0 0-8-8h-48a8 8 0 0 0-8 8v24a31.8 31.8 0 0 0 5.2 17.459l-7.3 1.043a43 43 0 0 1-5.902-21.852zm40 32a16.02 16.02 0 0 1-16-16V72h32v16a16.02 16.02 0 0 1-15.998 16zm15.949 16.416a15.988 15.988 0 0 1-30.726 5.151 15.8 15.8 0 0 1-1.2-5.49l1.1-.157a7.97 7.97 0 0 0 4.033-1.814 31.98 31.98 0 0 0 21.7 0 8 8 0 0 0 2.608 1.487zM151.972 87.478l24.641 36.959a8 8 0 0 0 7.787 3.482l39-5.571a31.994 31.994 0 0 0 31.863 29.082 32.01 32.01 0 0 0 31.4-25.865l24.836 8.279a11.76 11.76 0 0 1 5.3 3.572l44.389 51.79a8 8 0 0 0 3.1 2.22L403.148 207l-7.457 11.186-40.379-9.457-54.385-54.386a8 8 0 0 0-13.5 7.226l6.357 31.788c-2.436.339-4.914.654-7.418.944a309 309 0 0 1-34.8 1.979c-9.194 0-18.47-.417-27.568-1.238a308 308 0 0 1-15.672-1.829l6.869-48.082a8 8 0 0 0-9.488-8.976l-26.859 5.37a11.97 11.97 0 0 1-12.346-5.1l-26.597-39.896zM121.4 63a7.44 7.44 0 0 1 5.18-4.588 7.6 7.6 0 0 1 1.834-.225 7.53 7.53 0 0 1 6.275 3.359l8.4 12.6-12.066 9.05-8.867-13.296a7.45 7.45 0 0 1-.756-6.9M21.47 207.589a52.73 52.73 0 0 1 30.688 26.616l4.687 9.373a8 8 0 0 0 14.31 0l4.687-9.373a52.73 52.73 0 0 1 30.688-26.616 8 8 0 0 0 0-15.178A52.73 52.73 0 0 1 75.842 165.8l-4.687-9.373a8 8 0 0 0-14.31 0l-4.687 9.373a52.73 52.73 0 0 1-30.688 26.611 8 8 0 0 0 0 15.178M64 177.469A68.46 68.46 0 0 0 85.655 200 68.45 68.45 0 0 0 64 222.531 68.46 68.46 0 0 0 42.345 200 68.45 68.45 0 0 0 64 177.469M490.53 344.411a52.73 52.73 0 0 1-30.688-26.611l-4.687-9.373a8 8 0 0 0-14.31 0l-4.687 9.373a52.73 52.73 0 0 1-30.688 26.616 8 8 0 0 0 0 15.178 52.73 52.73 0 0 1 30.688 26.616l4.687 9.373a8 8 0 0 0 14.31 0l4.687-9.373a52.73 52.73 0 0 1 30.688-26.616 8 8 0 0 0 0-15.178zM448 374.531A68.46 68.46 0 0 0 426.345 352 68.45 68.45 0 0 0 448 329.469 68.46 68.46 0 0 0 469.655 352 68.45 68.45 0 0 0 448 374.531" fill="currentColor" opacity="1" data-original="currentColor" class=""></path><path d="M139.578 272.845a8 8 0 0 0-10.733 3.577 43.98 43.98 0 0 0 0 39.156 8 8 0 1 0 14.31-7.156 27.92 27.92 0 0 1 0-24.844 8 8 0 0 0-3.577-10.733M111.355 272.845a8 8 0 0 0-10.733 3.577 43.98 43.98 0 0 0 0 39.156 8 8 0 0 0 14.311-7.156 27.91 27.91 0 0 1 0-24.844 8 8 0 0 0-3.578-10.733M396.058 163.045a7.98 7.98 0 0 0 5.822-2.511 43.99 43.99 0 0 0 11.285-37.495 8 8 0 1 0-15.766 2.728 27.91 27.91 0 0 1-7.16 23.79 8 8 0 0 0 5.819 13.488M417.265 157.691a8 8 0 0 0 11.642 10.976 43.99 43.99 0 0 0 11.283-37.494 8 8 0 1 0-15.765 2.727 27.92 27.92 0 0 1-7.16 23.791" fill="currentColor" opacity="1" data-original="currentColor" class=""></path></g></svg>
+                                </div>
+                                <span class="exp-bold-text glitter-text-clip">BODY</span>
+                            </div>
+                            <div class="exp-bottom-line">
+                                <span class="exp-script-text neon-script-glow">Kinetic</span>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════
+             SECTION 3: EARLY ACCESS SWIPER CAROUSEL (EQUAL HEIGHT)
+        ══════════════════════════════════════════════════ -->
+        <section class="pricing-section" id="pricing-section">
+            <div class="pricing-container">
+                
+                <!-- Brand Title -->
+                <div class="pricing-brand-title glitter-text-clip">
+                    SWAYÉ
+                    <div class="title-glint"></div>
+                </div>
+
+                <div class="pricing-ticket-label">TICKET PRICING</div>
+                <div class="pricing-star-divider">✦</div>
+
+                <!-- Phase Pill -->
+                <div class="phase-pill">
+                    <span class="pill-star">✦</span>
+                    <span>EARLY ACCESS</span>
+                </div>
+
+                <div class="people-max-text">50-60 PEOPLE MAXIMUM</div>
+
+                <!-- Swiper Carousel Container (1 Card at a Time with Equal Heights) -->
+                <div class="swiper pricing-swiper">
+                    <div class="swiper-wrapper">
+                        
+                        <!-- Slide 1: SINGLE PASS -->
+                        <div class="swiper-slide">
+                            <div class="price-card-v3" onclick="selectTier('999')">
+                                <div class="card-top-content">
+                                    <div class="card-icon-area-v3">
+                                        <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
+                                            <circle cx="12" cy="7" r="4.5" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M4 21C4 16.5 7.5 13.5 12 13.5C16.5 13.5 20 16.5 20 21" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="card-type-title-v3">SINGLE PASS</div>
+                                    <div class="card-inner-divider-v3"></div>
+                                    <div class="card-price-value-v3 glitter-text-clip">
+                                        <span class="rupee-sign">₹</span>999
+                                    </div>
+                                    <div class="card-per-sub-v3">/ 1 GUEST</div>
+                                    
+                                    <div class="card-perks-list">
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Full Lounge &amp; Dance Access</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>1 Complimentary Artisan Mocktail</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Secret Venue Address Reveal</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-bottom-content">
+                                    <button type="button" class="card-select-btn">Select Pass</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 2: COUPLE PASS -->
+                        <div class="swiper-slide">
+                            <div class="price-card-v3" onclick="selectTier('1899')">
+                                <div class="card-top-content">
+                                    <div class="card-icon-area-v3">
+                                        <svg width="44" height="36" viewBox="0 0 32 24" fill="none">
+                                            <circle cx="11" cy="7" r="3.8" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M4 20C4 16 7 13.5 11 13.5C15 13.5 18 16 18 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                            <circle cx="21" cy="7" r="3.8" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M14 20C14 16 17 13.5 21 13.5C25 13.5 28 16 28 20" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
+                                    </div>
+                                    <div class="card-type-title-v3">COUPLE PASS</div>
+                                    <div class="card-inner-divider-v3"></div>
+                                    <div class="card-price-value-v3 glitter-text-clip">
+                                        <span class="rupee-sign">₹</span>1,899
+                                    </div>
+                                    <div class="card-per-sub-v3">/ 2 GUESTS</div>
+                                    
+                                    <div class="card-perks-list">
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Entry for 2 (₹949.50 / Person)</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>2 Complimentary Artisan Mocktails</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Priority Lounge Check-in</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="card-bottom-content">
+                                    <button type="button" class="card-select-btn">Select Pass</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Slide 3: GROUP OF 5 -->
+                        <div class="swiper-slide">
+                            <div class="price-card-v3" onclick="selectTier('4399')">
+                                <div class="card-top-content">
+                                    <div class="card-icon-area-v3">
+                                        <svg width="48" height="36" viewBox="0 0 36 24" fill="none">
+                                            <circle cx="7" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <circle cx="14" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <circle cx="21" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <circle cx="28" cy="6" r="3" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M2 19C2 15.5 4.5 13.5 7 13.5C9.5 13.5 12 15.5 12 19" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M14 19C14 15.5 16.5 13.5 19 13.5C21.5 13.5 24 15.5 24 19" stroke="currentColor" stroke-width="1.5"/>
+                                            <path d="M26 19C26 15.5 28.5 13.5 31 13.5C33.5 13.5 36 15.5 36 19" stroke="currentColor" stroke-width="1.5"/>
+                                        </svg>
+                                    </div>
+                                    <div class="card-type-title-v3">GROUP OF 5</div>
+                                    <div class="card-inner-divider-v3"></div>
+                                    <div class="card-price-value-v3 glitter-text-clip">
+                                        <span class="rupee-sign">₹</span>4,399
+                                    </div>
+                                    <div class="card-per-sub-v3">/ 5 GUESTS</div>
+                                    
+                                    <div class="effectively-pill-v3">
+                                        <span class="eff-label-v3">BEST VALUE SAVINGS</span>
+                                        <span class="eff-val-v3">₹879.80 / PERSON</span>
+                                    </div>
+
+                                    <div class="card-perks-list" style="margin-top: 8px;">
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>5 Complimentary Mocktails</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Reserved Group Table Area</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card-bottom-content">
+                                    <button type="button" class="card-select-btn">Select Pass</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Swiper Pagination Bullets -->
+                    <div class="swiper-pagination"></div>
+                </div>
+
+                <!-- Bottom Tagline & Logo -->
+                <div class="pricing-star-divider">✦</div>
+                <div class="pricing-tagline">BETTER TOGETHER. BETTER NIGHT.</div>
+                
+                <div class="pricing-bottom-oval">
+                    <span>SWAYÉ</span>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- ══════════════════════════════════════════════
+             MIDDLE SECTIONS: LOCATION & RSVP BOOKING
+        ══════════════════════════════════════════════ -->
+        <div class="flowing-content">
+            
+            <!-- Secret Location Section -->
+            <div class="glass-panel">
+                <h2 class="sec-title">The Secret Location</h2>
+                <div class="map-wrap">
+                    <img src="images/map.avif" alt="Secret Map Location" loading="lazy" decoding="async" fetchpriority="low">
+                    <div class="map-overlay">
+                        <p>Full address is revealed upon booking.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- RSVP Form & Checkout Section with Bootstrap-like Validation -->
+            <!-- RSVP Form & Checkout Section with Google Sheet Submission -->
+            <div class="glass-panel" id="rsvp-container">
+                <h2 class="sec-title">RSVP &amp; Reservation</h2>
+                <p class="form-subtitle">Submit your details to reserve your access pass. Our hosting team will reach out directly to confirm your invitation.</p>
+                
+                <form id="rsvp-form" novalidate>
+                    <!-- Select Pass Tier -->
+                    <div class="form-group">
+                        <label class="form-label" for="fticket">Select Pass Tier</label>
+                        <select id="fticket" class="form-select">
+                            <option value="999">Single Pass — ₹999 (1 Guest)</option>
+                            <option value="1899">Couple Pass — ₹1,899 (2 Guests)</option>
+                            <option value="4399">Group of 5 Pass — ₹4,399 (5 Guests)</option>
+                        </select>
+                        <div class="invalid-feedback">Please select a ticket option.</div>
+                    </div>
+
+                    <!-- Guest 1: Full Name -->
+                    <div class="form-group">
+                        <label class="form-label" for="fname" id="fname-label">Full Name</label>
+                        <input type="text" id="fname" class="form-input" placeholder="e.g. Maya Verma" autocomplete="name">
+                        <div class="invalid-feedback">Please enter your full name (at least 2 characters).</div>
+                    </div>
+
+                    <!-- Guest 1: Instagram Profile Link (Mandatory) -->
+                    <div class="form-group">
+                        <label class="form-label" for="finsta" id="finsta-label">Instagram Profile Link</label>
+                        <input type="text" id="finsta" class="form-input" placeholder="e.g. instagram.com/maya.verma" autocomplete="url">
+                        <div class="invalid-feedback">Please enter a valid Instagram profile link.</div>
+                    </div>
+
+                    <!-- Couple Fields: Partner Details (Only shown for Couple Pass) -->
+                    <div id="couple-fields" style="display: none;">
+                        <div class="form-partner-divider">
+                            <span>Partner / Guest 2 Details</span>
+                        </div>
+
+                        <!-- Guest 2: Full Name -->
+                        <div class="form-group">
+                            <label class="form-label" for="fname2">Guest 2 Full Name</label>
+                            <input type="text" id="fname2" class="form-input" placeholder="e.g. Rahul Sharma">
+                            <div class="invalid-feedback">Please enter Guest 2's full name (at least 2 characters).</div>
+                        </div>
+
+                        <!-- Guest 2: Instagram Profile Link (Mandatory for Couple) -->
+                        <div class="form-group">
+                            <label class="form-label" for="finsta2">Guest 2 Instagram Profile Link</label>
+                            <input type="text" id="finsta2" class="form-input" placeholder="e.g. instagram.com/rahul.sharma">
+                            <div class="invalid-feedback">Please enter Guest 2's Instagram profile link.</div>
+                        </div>
+                    </div>
+
+                    <!-- Phone Number Input (WhatsApp Connected) -->
+                    <div class="form-group">
+                        <label class="form-label" for="fphone">Phone Number (WhatsApp Connected)</label>
+                        <input type="tel" id="fphone" class="form-input" placeholder="e.g. 9876XXXXXX" autocomplete="tel">
+                        <div class="invalid-feedback">Please enter a valid 10-digit phone number.</div>
+                    </div>
+                    
+                    <!-- Total Price Estimation -->
+                    <div class="checkout-total">
+                        <span>Estimated Total</span>
+                        <strong id="total-price">₹999</strong>
+                    </div>
+                    <p class="payment-info-note">*Payment will not be charged here. Pass confirmation and payment details will be sent directly to your phone number.</p>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn" id="submit-btn">Request Invitation</button>
+
+                    <!-- Success Confirmation Notice -->
+                    <div class="confirmation-notice" id="confirm-msg" style="display: none;">
+                        ✨ <strong>Invitation Request Received!</strong> Your pass reservation details have been recorded. Our team will contact you shortly with your confirmation.
+                    </div>
+
+                    <!-- Error Notice -->
+                    <div class="confirmation-notice error-notice" id="error-msg" style="display: none; background: rgba(255, 51, 102, 0.15); border-color: rgba(255, 51, 102, 0.5); color: #ffccd9; margin-top: 14px;">
+                        ⚠️ <strong>Submission Failed.</strong> Please check your connection or try again.
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <!-- ══════════════════════════════════════════════
+             SECTION 4: FOOTER / BRAND MANIFESTO (EXACT REPLICA)
+        ══════════════════════════════════════════════ -->
+        <footer class="footer-manifesto-sec" id="manifesto-section">
+            <div class="manifesto-container">
+                
+                <!-- Top Bar -->
+                <div class="manifesto-top-bar">
+                    <span class="alcohol-free-tag">ALCOHOL-FREE NIGHTLIFE</span>
+                </div>
+
+                <!-- Glitter Script & Accents -->
+                <div class="glitter-swaye-wrap">
+                    <!-- Top Left Lips SVG -->
+                    <svg class="manifesto-deco-lips-1" viewBox="0 0 32 24" fill="none">
+                        <path d="M2 12C5 8 10 5 16 8C22 5 27 8 30 12C26 15 21 16 16 14C11 16 6 15 2 12Z" fill="url(#pinkGlintGrad)"/>
+                        <path d="M3 13C7 19 12 22 16 22C20 22 25 19 29 13C24 16 19 17 16 16C13 17 8 16 3 13Z" fill="url(#pinkGlintGrad)"/>
+                        <circle cx="9" cy="9" r="1.2" fill="#fff"/>
+                        <circle cx="23" cy="9" r="1.2" fill="#fff"/>
+                        <circle cx="16" cy="19" r="1.4" fill="#fff"/>
+                    </svg>
+
+                    <!-- Top Right Glitter Star SVG -->
+                    <svg class="manifesto-deco-star-1" viewBox="0 0 24 24" fill="url(#pinkGlintGrad)">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        <circle cx="12" cy="7" r="1" fill="#fff"/>
+                        <circle cx="17" cy="14" r="1" fill="#fff"/>
+                    </svg>
+
+                    <div class="glitter-swaye-text glitter-text-clip">
+                        Swayé
+                        <span class="glitter-sparkle sp-1">✦</span>
+                        <span class="glitter-sparkle sp-2">✦</span>
+                        <span class="glitter-sparkle sp-3">✦</span>
+                        <span class="glitter-sparkle sp-4">✦</span>
+                    </div>
+
+                    <!-- Bottom Left Glitter Star SVG -->
+                    <svg class="manifesto-deco-star-2" viewBox="0 0 24 24" fill="url(#pinkGlintGrad)">
+                        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        <circle cx="12" cy="12" r="1.2" fill="#fff"/>
+                    </svg>
+
+                    <!-- Bottom Right Lips SVG -->
+                    <svg class="manifesto-deco-lips-2" viewBox="0 0 32 24" fill="none">
+                        <path d="M2 12C5 8 10 5 16 8C22 5 27 8 30 12C26 15 21 16 16 14C11 16 6 15 2 12Z" fill="url(#pinkGlintGrad)"/>
+                        <path d="M3 13C7 19 12 22 16 22C20 22 25 19 29 13C24 16 19 17 16 16C13 17 8 16 3 13Z" fill="url(#pinkGlintGrad)"/>
+                        <circle cx="10" cy="10" r="1" fill="#fff"/>
+                        <circle cx="20" cy="18" r="1.2" fill="#fff"/>
+                    </svg>
+                </div>
+
+                <!-- Headline -->
+                <div class="manifesto-headline">
+                    <h3>NOT A CLUB.<br>NOT A PARTY.<br>NOT WHAT YOU THINK.</h3>
+                </div>
+
+                <!-- Manifesto Body Copy -->
+                <div class="manifesto-body">
+                    <p>A night built for music.</p>
+                    <p>For movement.</p>
+                    <p>For meeting people.</p>
+                    <p>For dressing up.</p>
+                    <p>For staying out.</p>
+                    <p>For the stories you’ll</p>
+                    <p>actually remember.</p>
+                </div>
+
+                <!-- Zero Alcohol Block -->
+                <div class="manifesto-zero-block">
+                    <h4>ZERO ALCOHOL.<br>ZERO BORING.</h4>
+                </div>
+
+                <!-- Pillars -->
+                <div class="manifesto-pillars-row">
+                    <span>DANCE.</span>
+                    <span class="pillar-glint">✦</span>
+                    <span>CONNECT.</span>
+                    <span class="pillar-glint">✦</span>
+                    <span>LIVE WILD.</span>
+                </div>
+
+                <div class="manifesto-coming-script">
+                    <span class="neon-script-glow">Something is coming.</span>
+                </div>
+
+                <!-- Standard Mandatory Credit Link -->
+                <p class="footer-credit">Designed by <a href="https://invitebox.in/" target="_blank" rel="noreferrer">Invite&nbsp;Box</a></p>
+
+            </div>
+        </footer>
+
+        <!-- SVG Gradients Definition -->
+        <svg width="0" height="0" style="position: absolute;">
+            <defs>
+                <linearGradient id="pinkGlintGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stop-color="#ffffff"/>
+                    <stop offset="35%" stop-color="#ffb3d1"/>
+                    <stop offset="70%" stop-color="#e28fae"/>
+                    <stop offset="100%" stop-color="#b31b54"/>
+                </linearGradient>
+            </defs>
+        </svg>
+
+    </div>
+
+    <!-- Swiper.js Script -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+
+    <!-- Main Scripts -->
+    <script>
+        // Ensure scroll to top on reload
+        if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+        window.scrollTo(0, 0);
+
+        // Initialize Swiper for Equal-Height Pricing Cards
+        const pricingSwiper = new Swiper('.pricing-swiper', {
+            slidesPerView: 'auto',
+            centeredSlides: true,
+            spaceBetween: 16,
+            grabCursor: true,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+        });
+
+        // UI Elements
+        const curtainLayer = document.getElementById('curtain-layer');
+        const curtainVideo = document.getElementById('curtain-video');
+        const bgMusic = document.getElementById('bg-music');
+        const mfab = document.getElementById('mfab');
+        const scrollIndicator = document.getElementById('scroll-indicator');
+
+        // Video Entry Logic
+        let hasInteracted = false;
+        function openIntro() {
+            if (hasInteracted) return;
+            hasInteracted = true;
+            
+            // Hide tap text
+            const tapOverlay = document.querySelector('.tap-overlay');
+            if (tapOverlay) tapOverlay.style.display = 'none';
+            
+            // Play video
+            curtainVideo.muted = false;
+            curtainVideo.volume = 1.0;
+            const playPromise = curtainVideo.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(e => {
+                    console.warn("Video play error (fallback):", e);
+                    curtainVideo.play().catch(err => console.log("Final video play failure:", err));
+                });
+            }
+            
+            // Listen for video end
+            curtainVideo.addEventListener('ended', unlockExperience, { once: true });
+        }
+
+        curtainLayer.addEventListener('click', openIntro);
+
+        function unlockExperience() {
+            curtainLayer.classList.add('hidden');
+            document.body.classList.add('unlocked');
+            scrollIndicator.classList.add('visible');
+            
+            // Autoplay music
+            bgMusic.volume = 0.5;
+            bgMusic.play().catch(e => console.log("Audio autoplay prevented"));
+        }
+
+        // Music toggle
+        mfab.addEventListener('click', () => {
+            if (bgMusic.paused) {
+                bgMusic.play();
+                mfab.classList.remove('muted');
+            } else {
+                bgMusic.pause();
+                mfab.classList.add('muted');
+            }
+        });
+
+        // Hide scroll indicator on scroll
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 60) {
+                scrollIndicator.style.opacity = '0';
+            } else if (document.body.classList.contains('unlocked')) {
+                scrollIndicator.style.opacity = '1';
+            }
+        });
+
+        // Checkout Calculator & Dynamic Tier Form Control
+        const fticket = document.getElementById('fticket');
+        const fqty = document.getElementById('fqty');
+        const totalPriceEl = document.getElementById('total-price');
+        const coupleFields = document.getElementById('couple-fields');
+        const fnameLabel = document.getElementById('fname-label');
+        const finstaLabel = document.getElementById('finsta-label');
+        const fname = document.getElementById('fname');
+        const finsta = document.getElementById('finsta');
+        const fname2 = document.getElementById('fname2');
+        const finsta2 = document.getElementById('finsta2');
+        const fphone = document.getElementById('fphone');
+        const rsvpForm = document.getElementById('rsvp-form');
+
+        function updateTotal() {
+            const price = parseInt(fticket.value) || 999;
+            totalPriceEl.textContent = `₹${price.toLocaleString()}`;
+        }
+
+        function updateTierFields() {
+            const tier = fticket.value;
+            if (tier === '1899') {
+                // Couple Pass
+                coupleFields.style.display = 'block';
+                if (fnameLabel) fnameLabel.textContent = 'Guest 1: Full Name';
+                if (finstaLabel) finstaLabel.textContent = 'Guest 1: Instagram Profile Link';
+            } else if (tier === '4399') {
+                // Group of 5
+                coupleFields.style.display = 'none';
+                if (fnameLabel) fnameLabel.textContent = 'Group Lead: Full Name';
+                if (finstaLabel) finstaLabel.textContent = 'Group Lead: Instagram Profile Link';
+                clearCoupleValidation();
+            } else {
+                // Single Pass
+                coupleFields.style.display = 'none';
+                if (fnameLabel) fnameLabel.textContent = 'Full Name';
+                if (finstaLabel) finstaLabel.textContent = 'Instagram Profile Link';
+                clearCoupleValidation();
+            }
+        }
+
+        function clearCoupleValidation() {
+            if (fname2) {
+                fname2.classList.remove('is-valid', 'is-invalid');
+            }
+            if (finsta2) {
+                finsta2.classList.remove('is-valid', 'is-invalid');
+            }
+        }
+
+        fticket.addEventListener('change', () => {
+            updateTotal();
+            updateTierFields();
+            validateField(fticket, true);
+        });
+
+        // Select ticket function from Swiper card click
+        function selectTier(value) {
+            fticket.value = value;
+            updateTotal();
+            updateTierFields();
+            validateField(fticket, true);
+            document.getElementById('rsvp-container').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // ── Custom Form Validation Helpers ──
+        function validateName(el) {
+            if (!el) return true;
+            const val = el.value.trim();
+            const isValid = val.length >= 2;
+            setFieldValidation(el, isValid);
+            return isValid;
+        }
+
+        function validateInstagram(el) {
+            if (!el) return true;
+            let val = el.value.trim();
+            const isValid = val.length >= 3;
+            setFieldValidation(el, isValid);
+            return isValid;
+        }
+
+        function validatePhone() {
+            const val = fphone.value.trim().replace(/\D/g, '');
+            const isValid = val.length >= 10;
+            setFieldValidation(fphone, isValid);
+            return isValid;
+        }
+
+        function validateField(el, isValid) {
+            setFieldValidation(el, isValid);
+        }
+
+        function setFieldValidation(el, isValid) {
+            if (!el) return;
+            if (isValid) {
+                el.classList.remove('is-invalid');
+                el.classList.add('is-valid');
+            } else {
+                el.classList.remove('is-valid');
+                el.classList.add('is-invalid');
+            }
+        }
+
+        function formatInstagramUrl(val) {
+            val = (val || '').trim();
+            if (!val) return '';
+            if (val.startsWith('http://') || val.startsWith('https://')) {
+                return val;
+            }
+            if (val.startsWith('instagram.com') || val.startsWith('www.instagram.com')) {
+                return `https://${val}`;
+            }
+            if (val.startsWith('@')) {
+                return `https://instagram.com/${val.substring(1)}`;
+            }
+            return `https://instagram.com/${val}`;
+        }
+
+        // Real-time input listeners
+        fname.addEventListener('input', () => { if (fname.classList.contains('is-invalid') || fname.value.length >= 2) validateName(fname); });
+        fname.addEventListener('blur', () => validateName(fname));
+
+        finsta.addEventListener('input', () => { if (finsta.classList.contains('is-invalid') || finsta.value.length >= 3) validateInstagram(finsta); });
+        finsta.addEventListener('blur', () => validateInstagram(finsta));
+
+        if (fname2) {
+            fname2.addEventListener('input', () => { if (fname2.classList.contains('is-invalid') || fname2.value.length >= 2) validateName(fname2); });
+            fname2.addEventListener('blur', () => { if (fticket.value === '1899') validateName(fname2); });
+        }
+
+        if (finsta2) {
+            finsta2.addEventListener('input', () => { if (finsta2.classList.contains('is-invalid') || finsta2.value.length >= 3) validateInstagram(finsta2); });
+            finsta2.addEventListener('blur', () => { if (fticket.value === '1899') validateInstagram(finsta2); });
+        }
+
+        fphone.addEventListener('input', () => { if (fphone.classList.contains('is-invalid') || fphone.value.length >= 10) validatePhone(); });
+        fphone.addEventListener('blur', validatePhone);
+
+        // ── Google Sheets Apps Script Web App Configuration ──
+        // Replace this with your deployed Google Apps Script Web App URL:
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbw1ZCVFrgw_X9-t66e9GZDXbKk47FGIqG3JwmH85HQQhD_m6U688DsiY_Eh3M5NOZvMUQ/exec";
+
+        let isSubmitting = false;
+
+        // Form Submit Handler (Sends Data to Google Sheets)
+        rsvpForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Prevent double submission while request is ongoing
+            if (isSubmitting) return;
+
+            const isCouple = fticket.value === '1899';
+            const isGroup = fticket.value === '4399';
+
+            const isNameValid = validateName(fname);
+            const isInstaValid = validateInstagram(finsta);
+            const isPhoneValid = validatePhone();
+            let isName2Valid = true;
+            let isInsta2Valid = true;
+
+            if (isCouple) {
+                isName2Valid = validateName(fname2);
+                isInsta2Valid = validateInstagram(finsta2);
+            }
+
+            if (!isNameValid || !isInstaValid || !isPhoneValid || !isName2Valid || !isInsta2Valid) {
+                // Focus first invalid element
+                const firstInvalid = rsvpForm.querySelector('.is-invalid');
+                if (firstInvalid) firstInvalid.focus();
+                return;
+            }
+
+            const name = fname.value.trim();
+            const insta = formatInstagramUrl(finsta.value);
+            const phone = fphone.value.trim();
+            const ticketText = fticket.options[fticket.selectedIndex].text;
+            const total = totalPriceEl.textContent;
+            const name2 = isCouple ? fname2.value.trim() : "N/A";
+            const insta2 = isCouple ? formatInstagramUrl(finsta2.value) : "N/A";
+
+            const payload = {
+                timestamp: new Date().toISOString(),
+                passTier: ticketText,
+                totalPrice: total,
+                guest1Name: name,
+                guest1Instagram: insta,
+                guest2Name: name2,
+                guest2Instagram: insta2,
+                contactNumber: phone,
+                phone: phone
+            };
+
+            const submitBtn = document.getElementById('submit-btn');
+            const confirmMsg = document.getElementById('confirm-msg');
+            const errorMsg = document.getElementById('error-msg');
+
+            isSubmitting = true;
+            confirmMsg.style.display = 'none';
+            if (errorMsg) errorMsg.style.display = 'none';
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="btn-spinner"></span> Submitting Request...';
+
+            function onSubmissionSuccess() {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '✨ Request Sent!';
+                confirmMsg.style.display = 'block';
+                confirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                rsvpForm.reset();
+                updateTotal();
+                updateTierFields();
+                fname.classList.remove('is-valid', 'is-invalid');
+                finsta.classList.remove('is-valid', 'is-invalid');
+                fphone.classList.remove('is-valid', 'is-invalid');
+                if (fname2) fname2.classList.remove('is-valid', 'is-invalid');
+                if (finsta2) finsta2.classList.remove('is-valid', 'is-invalid');
+
+                setTimeout(() => {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = 'Request Invitation';
+                    isSubmitting = false;
+                }, 4000);
+            }
+
+            function onSubmissionError(err) {
+                console.error("Submission error:", err);
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Request Invitation';
+                isSubmitting = false;
+                if (errorMsg) {
+                    errorMsg.style.display = 'block';
+                    errorMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+
+            // Check if user has replaced placeholder script URL
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("YOUR_SCRIPT_ID")) {
+                console.warn("GOOGLE_SCRIPT_URL placeholder active. Simulating successful submission.");
+                setTimeout(() => {
+                    onSubmissionSuccess();
+                }, 800);
+            } else {
+                fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(() => {
+                    onSubmissionSuccess();
+                })
+                .catch((err) => {
+                    onSubmissionError(err);
+                });
+            }
+        });
+
+        // Disco Canvas Animation (Diamond Dust & Lasers)
+        const canvas = document.getElementById('disco-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let particles = [];
+        let lasers = [];
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.size = Math.random() * 1.8 + 0.4;
+                this.speedY = Math.random() * -0.4 - 0.1;
+                this.speedX = (Math.random() - 0.5) * 0.4;
+                this.alpha = Math.random();
+                this.alphaChange = (Math.random() * 0.02) + 0.005;
+                this.hue = Math.random() > 0.6 ? 330 : (Math.random() > 0.3 ? 310 : 345);
+            }
+            update() {
+                this.y += this.speedY;
+                this.x += this.speedX;
+                if (this.y < 0) this.y = height;
+                if (this.x < 0) this.x = width;
+                if (this.x > width) this.x = 0;
+                
+                this.alpha += this.alphaChange;
+                if (this.alpha <= 0.05 || this.alpha >= 0.95) this.alphaChange *= -1;
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `hsla(${this.hue}, 100%, 75%, ${this.alpha})`;
+                ctx.fill();
+            }
+        }
+
+        class Laser {
+            constructor() {
+                this.angle = Math.random() * Math.PI * 2;
+                this.speed = (Math.random() - 0.5) * 0.015;
+                this.hue = 325;
+            }
+            update() {
+                this.angle += this.speed;
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(width / 2, -50);
+                ctx.rotate(this.angle);
+                
+                const grad = ctx.createLinearGradient(0, 0, 0, height * 1.4);
+                grad.addColorStop(0, `hsla(${this.hue}, 100%, 65%, 0.1)`);
+                grad.addColorStop(1, `hsla(${this.hue}, 100%, 65%, 0)`);
+                
+                ctx.beginPath();
+                ctx.moveTo(-8, 0);
+                ctx.lineTo(8, 0);
+                ctx.lineTo(120, height * 1.4);
+                ctx.lineTo(-120, height * 1.4);
+                ctx.fillStyle = grad;
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        // Init
+        for (let i = 0; i < 90; i++) particles.push(new Particle());
+        for (let i = 0; i < 3; i++) lasers.push(new Laser());
+
+        function animate() {
+            ctx.clearRect(0, 0, width, height);
+            
+            lasers.forEach(laser => {
+                laser.update();
+                laser.draw();
+            });
+            
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+        animate();
+    </script>
+</body>
+</html>
