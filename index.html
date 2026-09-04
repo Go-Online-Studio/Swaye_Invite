@@ -1255,30 +1255,31 @@
             text-shadow: 0 0 15px rgba(255, 0, 127, 0.4);
         }
 
-        /* Secret Location */
+        /* Venue Location */
         .map-wrap {
             position: relative;
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid rgba(226, 143, 174, 0.35);
+            padding-bottom: 75%;
+            height: 0;
         }
-        .map-wrap img { width: 100%; display: block; opacity: 0.75; }
-        .map-overlay {
+        .map-wrap iframe {
             position: absolute;
-            inset: 0;
-            background: rgba(17, 4, 12, 0.65);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
         }
-        .map-overlay p {
-            font-family: 'Cinzel', serif;
-            font-size: 0.98rem;
-            color: #ffffff;
-            letter-spacing: 0.08em;
-            text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+        .venue-address {
+            text-align: center;
+            color: #f7bbd0;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            line-height: 1.5;
+            letter-spacing: 0.05em;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
         }
 
         /* ── RSVP Form with Custom Bootstrap-Like Validation ── */
@@ -1627,6 +1628,248 @@
             text-decoration: none;
             font-weight: 600;
         }
+
+        /* Sleek Dark Mode for Google Map IFrames */
+        .map-dark-theme {
+            filter: invert(100%) hue-rotate(148deg) brightness(86%) contrast(92%) grayscale(20%);
+            transition: filter 0.3s ease;
+        }
+
+        /* ── Terms & Conditions Section ── */
+        .tnc-section {
+            width: 100%;
+            padding: 48px 20px 36px;
+            background: linear-gradient(180deg, #0d0409 0%, #110614 60%, #0d0409 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .tnc-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.45) 30%, rgba(226, 143, 174, 0.7) 50%, rgba(226, 143, 174, 0.45) 70%, transparent);
+        }
+        .tnc-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+        .tnc-eyebrow {
+            font-family: 'Cinzel', serif;
+            font-size: 0.65rem;
+            font-weight: 700;
+            letter-spacing: 0.38em;
+            text-indent: 0.38em;
+            color: var(--rose-gold);
+            text-transform: uppercase;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        .tnc-title {
+            font-family: 'Cinzel', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 0.18em;
+            background: linear-gradient(135deg, #ffffff 0%, #ffdfeb 40%, #e28fae 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-transform: uppercase;
+        }
+        .tnc-divider {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 16px 0 24px;
+        }
+        .tnc-divider::before,
+        .tnc-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 143, 174, 0.35));
+        }
+        .tnc-divider::after {
+            background: linear-gradient(90deg, rgba(226, 143, 174, 0.35), transparent);
+        }
+        .tnc-divider-gem {
+            color: var(--rose-gold);
+            font-size: 0.75rem;
+            opacity: 0.7;
+        }
+        .tnc-body {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .tnc-clause {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            padding: 12px 14px;
+            background: rgba(255, 255, 255, 0.022);
+            border: 1px solid rgba(226, 143, 174, 0.1);
+            border-left: 2px solid rgba(179, 27, 84, 0.5);
+            border-radius: 0 4px 4px 0;
+            transition: border-left-color 0.3s ease, background 0.3s ease;
+        }
+        .tnc-clause:hover {
+            border-left-color: rgba(226, 143, 174, 0.7);
+            background: rgba(255, 255, 255, 0.038);
+        }
+        .tnc-clause-num {
+            font-family: 'Cinzel', serif;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: rgba(226, 143, 174, 0.55);
+            letter-spacing: 0.05em;
+            flex-shrink: 0;
+            margin-top: 1px;
+            min-width: 18px;
+        }
+        .tnc-clause-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 400;
+            line-height: 1.7;
+            color: rgba(252, 226, 236, 0.6);
+            letter-spacing: 0.02em;
+        }
+        .tnc-confirm-block {
+            margin-top: 24px;
+            padding: 16px;
+            text-align: center;
+            background: rgba(179, 27, 84, 0.08);
+            border: 1px solid rgba(226, 143, 174, 0.2);
+            border-radius: 4px;
+            position: relative;
+        }
+        .tnc-confirm-block::before {
+            content: '✦';
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0d0409;
+            padding: 0 8px;
+            color: var(--rose-gold);
+            font-size: 0.7rem;
+        }
+        .tnc-confirm-text {
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 600;
+            line-height: 1.7;
+            color: rgba(226, 143, 174, 0.75);
+            letter-spacing: 0.04em;
+        }
+
+        /* ── Terms & Conditions Acceptance Checkbox ── */
+        .tnc-check-group {
+            margin-top: 14px;
+            margin-bottom: 18px;
+            text-align: left;
+        }
+        .tnc-checkbox-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+        }
+        .tnc-checkbox-input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+            pointer-events: none;
+        }
+        .tnc-custom-box {
+            width: 17px;
+            height: 17px;
+            flex-shrink: 0;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1.5px solid rgba(226, 143, 174, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s ease;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
+        .tnc-checkbox-label:hover .tnc-custom-box {
+            border-color: rgba(226, 143, 174, 0.8);
+            background: rgba(255, 255, 255, 0.07);
+        }
+        .tnc-checkbox-input:focus-visible + .tnc-custom-box {
+            outline: 2px solid var(--rose-gold);
+            outline-offset: 2px;
+        }
+        .tnc-checkbox-input:checked + .tnc-custom-box {
+            background: linear-gradient(135deg, #b31b54, #e28fae);
+            border-color: #ffb3d1;
+            box-shadow: 0 0 10px rgba(226, 143, 174, 0.45);
+        }
+        .tnc-check-icon {
+            width: 11px;
+            height: 11px;
+            stroke: #ffffff;
+            opacity: 0;
+            transform: scale(0.5);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .tnc-checkbox-input:checked + .tnc-custom-box .tnc-check-icon {
+            opacity: 1;
+            transform: scale(1);
+        }
+        .tnc-agreement-text {
+            font-size: 0.73rem;
+            color: rgba(255, 255, 255, 0.72);
+            line-height: 1.4;
+            letter-spacing: 0.015em;
+        }
+        .tnc-text-link {
+            color: var(--rose-gold);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            font-weight: 600;
+            transition: color 0.2s ease, text-shadow 0.2s ease;
+        }
+        .tnc-text-link:hover {
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 179, 209, 0.6);
+        }
+        /* Error animation & feedback */
+        .tnc-check-group.has-error .tnc-custom-box {
+            border-color: #ff3366 !important;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.5) !important;
+            animation: tncShake 0.4s ease-in-out;
+        }
+        .tnc-invalid-msg {
+            display: none;
+            font-size: 0.68rem;
+            color: #ff6b8b;
+            margin-top: 6px;
+            letter-spacing: 0.01em;
+            padding-left: 27px;
+        }
+        @keyframes tncShake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-4px); }
+            40%, 80% { transform: translateX(4px); }
+        }
+        /* Highlight pulse when arriving at T&C section */
+        .tnc-section.tnc-highlight {
+            animation: tncGlowPulse 1.8s ease-out;
+        }
+        @keyframes tncGlowPulse {
+            0% { box-shadow: 0 0 0 0 rgba(226, 143, 174, 0); }
+            30% { box-shadow: 0 0 35px 4px rgba(226, 143, 174, 0.45); }
+            100% { box-shadow: 0 0 0 0 rgba(226, 143, 174, 0); }
+        }
     </style>
 </head>
 <body>
@@ -1659,10 +1902,12 @@
         </svg>
     </div>
 
+
     <!-- Video Intro Layer -->
      <!-- https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4 -->
     <div id="curtain-layer">
-        <video id="curtain-video" src="https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4" playsinline disablePictureInPicture webkit-playsinline preload="auto" poster="images/Swaye_IntroThumb.webp"></video>
+        <!-- <video id="curtain-video" src="https://res.cloudinary.com/dticzwbrv/video/upload/v1788257331/Swaye_Intro_pianez.mp4" playsinline disablePictureInPicture webkit-playsinline preload="auto" poster="images/Swaye_IntroThumb.webp"></video> -->
+        <video id="curtain-video" src="images/Dummy.mp4" playsinline disablePictureInPicture webkit-playsinline preload="auto" poster="images/Swaye_IntroThumb.webp"></video>
         <div class="tap-overlay">
             <div class="tap-text">Tap anywhere to open</div>
         </div>
@@ -1713,7 +1958,7 @@
                     <div class="corner-notch cn-br"></div>
                     
                     <div class="date-time-line">
-                        THU. OCT 1<sup>st</sup> <span class="pipe">|</span> 9:00 PM
+                        THU. OCT 1<sup>st</sup> <span class="pipe">|</span> 7:00 PM
                     </div>
                     <div class="save-the-date-title">
                         SAVE THE DATE
@@ -1880,7 +2125,7 @@
                         
                         <!-- Slide 1: SINGLE PASS -->
                         <div class="swiper-slide">
-                            <div class="price-card-v3" onclick="selectTier('999')">
+                            <div class="price-card-v3" onclick="selectTier('1199')">
                                 <div class="card-top-content">
                                     <div class="card-icon-area-v3">
                                         <svg width="36" height="36" viewBox="0 0 24 24" fill="none">
@@ -1891,26 +2136,25 @@
                                     <div class="card-type-title-v3">SINGLE PASS</div>
                                     <div class="card-inner-divider-v3"></div>
                                     <div class="card-price-value-v3 glitter-text-clip">
-                                        <span class="rupee-sign">₹</span>999
+                                        <span class="rupee-sign">₹</span>1,199
                                     </div>
                                     <div class="card-per-sub-v3">/ 1 GUEST</div>
                                     
                                     <div class="card-perks-list">
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span>Full Lounge &amp; Dance Access</span>
+                                            <span>Full Lounge &amp; Pool Access</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Unlimited Food</span>
                                         </div>
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
                                             <span>1 Complimentary Artisan Mocktail</span>
                                         </div>
-                                        <div class="card-perk-item">
-                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span>Secret Venue Address Reveal</span>
-                                        </div>
                                     </div>
                                 </div>
-                                
                                 <div class="card-bottom-content">
                                     <button type="button" class="card-select-btn">Select Pass</button>
                                 </div>
@@ -1919,7 +2163,7 @@
 
                         <!-- Slide 2: COUPLE PASS -->
                         <div class="swiper-slide">
-                            <div class="price-card-v3" onclick="selectTier('1899')">
+                            <div class="price-card-v3" onclick="selectTier('2199')">
                                 <div class="card-top-content">
                                     <div class="card-icon-area-v3">
                                         <svg width="44" height="36" viewBox="0 0 32 24" fill="none">
@@ -1932,14 +2176,22 @@
                                     <div class="card-type-title-v3">COUPLE PASS</div>
                                     <div class="card-inner-divider-v3"></div>
                                     <div class="card-price-value-v3 glitter-text-clip">
-                                        <span class="rupee-sign">₹</span>1,899
+                                        <span class="rupee-sign">₹</span>2,199
                                     </div>
                                     <div class="card-per-sub-v3">/ 2 GUESTS</div>
                                     
                                     <div class="card-perks-list">
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span>Entry for 2 (₹949.50 / Person)</span>
+                                            <span>Full Lounge &amp; Pool Access</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Unlimited Food</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>Entry for 2 (₹1,099.50 / Person)</span>
                                         </div>
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1960,7 +2212,7 @@
 
                         <!-- Slide 3: GROUP OF 5 -->
                         <div class="swiper-slide">
-                            <div class="price-card-v3" onclick="selectTier('4399')">
+                            <div class="price-card-v3" onclick="selectTier('5799')">
                                 <div class="card-top-content">
                                     <div class="card-icon-area-v3">
                                         <svg width="48" height="36" viewBox="0 0 36 24" fill="none">
@@ -1976,23 +2228,27 @@
                                     <div class="card-type-title-v3">GROUP OF 5</div>
                                     <div class="card-inner-divider-v3"></div>
                                     <div class="card-price-value-v3 glitter-text-clip">
-                                        <span class="rupee-sign">₹</span>4,399
+                                        <span class="rupee-sign">₹</span>5,799
                                     </div>
                                     <div class="card-per-sub-v3">/ 5 GUESTS</div>
                                     
                                     <div class="effectively-pill-v3">
                                         <span class="eff-label-v3">BEST VALUE SAVINGS</span>
-                                        <span class="eff-val-v3">₹879.80 / PERSON</span>
+                                        <span class="eff-val-v3">₹1,159.80 / PERSON</span>
                                     </div>
 
                                     <div class="card-perks-list" style="margin-top: 8px;">
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span>5 Complimentary Mocktails</span>
+                                            <span>Full Lounge &amp; Pool Access</span>
                                         </div>
                                         <div class="card-perk-item">
                                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
-                                            <span>Reserved Group Table Area</span>
+                                            <span>Unlimited Food</span>
+                                        </div>
+                                        <div class="card-perk-item">
+                                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            <span>5 Complimentary Mocktails</span>
                                         </div>
                                     </div>
                                 </div>
@@ -2025,14 +2281,14 @@
         ══════════════════════════════════════════════ -->
         <div class="flowing-content">
             
-            <!-- Secret Location Section -->
+            <!-- Venue Location Section -->
             <div class="glass-panel">
-                <h2 class="sec-title">The Secret Location</h2>
+                <h2 class="sec-title">The Location</h2>
+                <p class="venue-address">
+                    Kavish Cafe, Donil, Opp. RTO, Golden Chowkdi,<br>NH-8, Vadodara - 390022
+                </p>
                 <div class="map-wrap">
-                    <img src="images/map.avif" alt="Secret Map Location" loading="lazy" decoding="async" fetchpriority="low">
-                    <div class="map-overlay">
-                        <p>Full address is revealed upon booking.</p>
-                    </div>
+                    <iframe class="map-dark-theme" src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1845.0973122973344!2d73.2401996744151!3d22.346278919141476!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395fcf9286bf42ad%3A0xf7a392351465a6c4!2sKavish%20Cafe!5e0!3m2!1sen!2sin!4v1788513079403!5m2!1sen!2sin" width="100%" height="auto" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
                 </div>
             </div>
 
@@ -2047,9 +2303,9 @@
                     <div class="form-group">
                         <label class="form-label" for="fticket">Select Pass Tier</label>
                         <select id="fticket" class="form-select">
-                            <option value="999">Single Pass — ₹999 (1 Guest)</option>
-                            <option value="1899">Couple Pass — ₹1,899 (2 Guests)</option>
-                            <option value="4399">Group of 5 Pass — ₹4,399 (5 Guests)</option>
+                            <option value="1199">Single Pass — ₹1,199 (1 Guest)</option>
+                            <option value="2199">Couple Pass — ₹2,199 (2 Guests)</option>
+                            <option value="5799">Group of 5 Pass — ₹5,799 (5 Guests)</option>
                         </select>
                         <div class="invalid-feedback">Please select a ticket option.</div>
                     </div>
@@ -2099,9 +2355,27 @@
                     <!-- Total Price Estimation -->
                     <div class="checkout-total">
                         <span>Estimated Total</span>
-                        <strong id="total-price">₹999</strong>
+                        <strong id="total-price">₹1,199</strong>
                     </div>
                     <p class="payment-info-note">*Payment will not be charged here. Pass confirmation and payment details will be sent directly to your phone number.</p>
+
+                    <!-- Terms & Conditions Acceptance Checkbox -->
+                    <div class="form-group tnc-check-group" id="tnc-check-group">
+                        <label class="tnc-checkbox-label" for="agree-terms">
+                            <input type="checkbox" id="agree-terms" name="agree_terms" class="tnc-checkbox-input" required>
+                            <span class="tnc-custom-box" aria-hidden="true">
+                                <svg class="tnc-check-icon" viewBox="0 0 12 10" fill="none">
+                                    <polyline points="1.5 5 4.5 8 10.5 2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                            <span class="tnc-agreement-text">
+                                I agree to the <a href="#tnc-section" class="tnc-text-link">Terms &amp; Conditions</a>
+                            </span>
+                        </label>
+                        <div class="invalid-feedback tnc-invalid-msg" id="tnc-invalid-msg">
+                            Please accept the Terms &amp; Conditions to proceed.
+                        </div>
+                    </div>
 
                     <!-- Submit Button -->
                     <button type="submit" class="btn" id="submit-btn">Request Invitation</button>
@@ -2119,6 +2393,87 @@
             </div>
 
         </div>
+
+        <!-- ══════════════════════════════════════════════
+             TERMS & CONDITIONS
+        ══════════════════════════════════════════════ -->
+        <section class="tnc-section" id="tnc-section">
+            <div class="tnc-header">
+                <div class="tnc-eyebrow">SWAYÉ — Official Event Policy</div>
+                <div class="tnc-title">Terms &amp; Conditions</div>
+            </div>
+
+            <div class="tnc-divider"><span class="tnc-divider-gem">✦</span></div>
+
+            <div class="tnc-body">
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">01</span>
+                    <p class="tnc-clause-text">Your ticket is valid only for the person(s), date and event specified at the time of booking. Entry is subject to ticket verification and SWAYÉ reserves the right to deny or remove entry for safety concerns or violation of these terms.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">02</span>
+                    <p class="tnc-clause-text">SWAYÉ is an alcohol-free event. Alcohol, illegal drugs and other intoxicating substances are strictly prohibited. Security checks may be conducted as required by the venue and event policy.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">03</span>
+                    <p class="tnc-clause-text">Use of the pool is subject to venue rules, safety instructions and capacity limits. Guests must follow instructions from lifeguards and event/venue staff. Dangerous behaviour, running, pushing or any activity that may put yourself or others at risk is not permitted. SWAYÉ may restrict or close pool access whenever required for safety.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">04</span>
+                    <p class="tnc-clause-text">Smoking is permitted only in the designated smoking area and is subject to venue rules and applicable laws.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">05</span>
+                    <p class="tnc-clause-text">Food and the included welcome drink are provided as specified with the ticket. Additional drinks, if available, may be chargeable. The menu or available items may be changed or substituted when reasonably required. Outside food or beverages are not permitted unless approved by the venue/event team.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">06</span>
+                    <p class="tnc-clause-text">Respect the space and the people around you. Harassment, bullying, fighting, unwanted physical contact, threatening or discriminatory behaviour, vandalism or disruptive conduct will not be tolerated. Anyone violating these rules may be asked to leave without a refund. Guests are responsible for their personal belongings, and SWAYÉ/venue will not be responsible for lost or unattended items except where required by applicable law.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">07</span>
+                    <p class="tnc-clause-text">Tickets are non-refundable, except where required by applicable law or where the event is cancelled and a refund is specifically offered under the applicable event policy.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">08</span>
+                    <p class="tnc-clause-text">SWAYÉ reserves the right to make reasonable changes to timings, activities, food, entertainment, performers, décor or other event arrangements when necessary.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">09</span>
+                    <p class="tnc-clause-text">Pool and outdoor activities may be modified, restricted or cancelled due to weather, safety concerns, government/venue restrictions or other circumstances beyond reasonable control. Any cancellation or postponement of the overall event will be handled according to the applicable event policy.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">10</span>
+                    <p class="tnc-clause-text">Guests may be held responsible for intentional or negligent damage caused by them to the venue, equipment or property, subject to applicable law and venue policies.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">11</span>
+                    <p class="tnc-clause-text">Reasonable security checks may be carried out at entry. Prohibited or unsafe items may be refused, confiscated or dealt with according to venue/event policy and applicable law.</p>
+                </div>
+
+                <div class="tnc-clause">
+                    <span class="tnc-clause-num">12</span>
+                    <p class="tnc-clause-text">By entering SWAYÉ, you acknowledge that photography and video recording may take place during the event and that your image may appear in event content, social media or promotional material. Where reasonably possible, requests not to be intentionally featured will be respected.</p>
+                </div>
+
+            </div>
+
+            <div class="tnc-confirm-block">
+                <p class="tnc-confirm-text">By purchasing a SWAYÉ ticket, you confirm that you have read and agreed to these Terms &amp; Conditions and understand that SWAYÉ is an alcohol-free event.</p>
+            </div>
+
+        </section>
 
         <!-- ══════════════════════════════════════════════
              SECTION 4: FOOTER / BRAND MANIFESTO (EXACT REPLICA)
@@ -2326,18 +2681,18 @@
         const rsvpForm = document.getElementById('rsvp-form');
 
         function updateTotal() {
-            const price = parseInt(fticket.value) || 999;
+            const price = parseInt(fticket.value) || 1199;
             totalPriceEl.textContent = `₹${price.toLocaleString()}`;
         }
 
         function updateTierFields() {
             const tier = fticket.value;
-            if (tier === '1899') {
+            if (tier === '2199' || tier === '1899') {
                 // Couple Pass
                 coupleFields.style.display = 'block';
                 if (fnameLabel) fnameLabel.textContent = 'Guest 1: Full Name';
                 if (finstaLabel) finstaLabel.textContent = 'Guest 1: Instagram Profile Link';
-            } else if (tier === '4399') {
+            } else if (tier === '5799' || tier === '4399') {
                 // Group of 5
                 coupleFields.style.display = 'none';
                 if (fnameLabel) fnameLabel.textContent = 'Group Lead: Full Name';
@@ -2439,16 +2794,53 @@
 
         if (fname2) {
             fname2.addEventListener('input', () => { if (fname2.classList.contains('is-invalid') || fname2.value.length >= 2) validateName(fname2); });
-            fname2.addEventListener('blur', () => { if (fticket.value === '1899') validateName(fname2); });
+            fname2.addEventListener('blur', () => { if (fticket.value === '2199' || fticket.value === '1899') validateName(fname2); });
         }
 
         if (finsta2) {
             finsta2.addEventListener('input', () => { if (finsta2.classList.contains('is-invalid') || finsta2.value.length >= 3) validateInstagram(finsta2); });
-            finsta2.addEventListener('blur', () => { if (fticket.value === '1899') validateInstagram(finsta2); });
+            finsta2.addEventListener('blur', () => { if (fticket.value === '2199' || fticket.value === '1899') validateInstagram(finsta2); });
         }
 
         fphone.addEventListener('input', () => { if (fphone.classList.contains('is-invalid') || fphone.value.length >= 10) validatePhone(); });
         fphone.addEventListener('blur', validatePhone);
+
+        // ── Terms & Conditions Checkbox & Validation ──
+        const agreeTerms = document.getElementById('agree-terms');
+        const tncCheckGroup = document.getElementById('tnc-check-group');
+        const tncInvalidMsg = document.getElementById('tnc-invalid-msg');
+        const tncLink = document.querySelector('.tnc-text-link');
+
+        function validateTerms() {
+            if (!agreeTerms) return true;
+            const isValid = agreeTerms.checked;
+            if (isValid) {
+                if (tncCheckGroup) tncCheckGroup.classList.remove('has-error');
+                if (tncInvalidMsg) tncInvalidMsg.style.display = 'none';
+            } else {
+                if (tncCheckGroup) tncCheckGroup.classList.add('has-error');
+                if (tncInvalidMsg) tncInvalidMsg.style.display = 'block';
+            }
+            return isValid;
+        }
+
+        if (agreeTerms) {
+            agreeTerms.addEventListener('change', validateTerms);
+        }
+
+        // Direct Smooth Scroll to T&C Section with visual pulse
+        if (tncLink) {
+            tncLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                const target = document.getElementById('tnc-section');
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    target.classList.add('tnc-highlight');
+                    setTimeout(() => target.classList.remove('tnc-highlight'), 1800);
+                }
+            });
+        }
 
         // ── Google Sheets Apps Script Web App Configuration ──
         // Replace this with your deployed Google Apps Script Web App URL:
@@ -2463,8 +2855,8 @@
             // Prevent double submission while request is ongoing
             if (isSubmitting) return;
 
-            const isCouple = fticket.value === '1899';
-            const isGroup = fticket.value === '4399';
+            const isCouple = fticket.value === '2199' || fticket.value === '1899';
+            const isGroup = fticket.value === '5799' || fticket.value === '4399';
 
             const isNameValid = validateName(fname);
             const isInstaValid = validateInstagram(finsta);
@@ -2477,10 +2869,24 @@
                 isInsta2Valid = validateInstagram(finsta2);
             }
 
-            if (!isNameValid || !isInstaValid || !isPhoneValid || !isName2Valid || !isInsta2Valid) {
+            const isTermsValid = validateTerms();
+
+            if (!isNameValid || !isInstaValid || !isPhoneValid || !isName2Valid || !isInsta2Valid || !isTermsValid) {
                 // Focus first invalid element
-                const firstInvalid = rsvpForm.querySelector('.is-invalid');
-                if (firstInvalid) firstInvalid.focus();
+                if (!isNameValid) {
+                    fname.focus();
+                } else if (!isInstaValid) {
+                    finsta.focus();
+                } else if (isCouple && !isName2Valid) {
+                    fname2.focus();
+                } else if (isCouple && !isInsta2Valid) {
+                    finsta2.focus();
+                } else if (!isPhoneValid) {
+                    fphone.focus();
+                } else if (!isTermsValid && agreeTerms) {
+                    agreeTerms.focus();
+                    if (tncCheckGroup) tncCheckGroup.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
                 return;
             }
 
@@ -2501,7 +2907,8 @@
                 guest2Name: name2,
                 guest2Instagram: insta2,
                 contactNumber: phone,
-                phone: phone
+                phone: phone,
+                termsAccepted: "Yes"
             };
 
             const submitBtn = document.getElementById('submit-btn');
@@ -2520,6 +2927,9 @@
                 confirmMsg.style.display = 'block';
                 confirmMsg.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
                 rsvpForm.reset();
+                if (agreeTerms) agreeTerms.checked = false;
+                if (tncCheckGroup) tncCheckGroup.classList.remove('has-error');
+                if (tncInvalidMsg) tncInvalidMsg.style.display = 'none';
                 updateTotal();
                 updateTierFields();
                 fname.classList.remove('is-valid', 'is-invalid');
